@@ -2,6 +2,13 @@ digraph {
     rankdir=LR;
     bgcolor="#2D4059";
 
+
+    NODE_TEXT[shape=note, fontname="verdana",
+        style=bold, style=filled,
+        color="#EA5455", fillcolor="#ECC237",
+        label = "some long text \na very long text\naaaaaaaaaaaaa\naaaaaaaa\n"]
+
+
     NODE_0[shape="record", fontname="verdana",
         style=bold, style=filled,
         color="#ECC237", fillcolor="#EA5455",
