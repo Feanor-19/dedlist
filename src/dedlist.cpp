@@ -1,5 +1,6 @@
 #include <assert.h>
 
+
 #include "dedlist.h"
 
 void print_dedlist_status_code_message( DedlistStatusCode code, FILE *stream)
@@ -187,7 +188,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     // TODO - добавить время дампа?
     fprintf(dot_file,   "DEDLIST DUMP:\\n"
                         "Dedlist[%p] (%s) declared in %s(%d), in function %s.\\n"
-                        "STACK_DUMP() called from %s(%d), from function %s.\\n",
+                        "STACK_DUMP() called from %s(%d), from function %s.\\n"
+                        "capacity: %lld; free: %lld; nodes: [%p].",
                         dedlist_ptr,
                         dedlist_ptr->orig_info.dedlist_name,
                         dedlist_ptr->orig_info.dedlist_orig_file_name,
@@ -195,7 +197,10 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                         dedlist_ptr->orig_info.orig_func_name,
                         called_from_file,
                         called_from_line,
-                        called_from_func);
+                        called_from_func,
+                        dedlist_ptr->capacity,
+                        dedlist_ptr->free,
+                        dedlist_ptr->nodes);
     dedlist_print_verify_res_(dot_file, verify_res);
     fprintf(dot_file, "\"]\n\n\n");
     //---------------------------------------------------------------------
@@ -326,11 +331,36 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     return DEDLIST_STATUS_OK;
 }
 
-inline DedlistStatusCode generate_dump_img_( FILE * dot_tmp_file, const char * img_file_name )
+inline DedlistStatusCode generate_dump_img_( )
 {
+    char cmd[MAX_CMD_GEN_DUMP_IMG_LENGHT] = {};
+    int written_chars = snprintf(   cmd,
+                                    MAX_CMD_GEN_DUMP_IMG_LENGHT,
+                                    "dot %s -Tjpg -o %s",
+                                    DUMP_DOT_FILE_PATH,
+                                    DUMP_IMG_FILE_PATH);
 
+    printf("<%s>\n", cmd);
 
+    if ( written_chars >= (int) MAX_CMD_GEN_DUMP_IMG_LENGHT)
+    {
+        fprintf(stderr, "Command to generate dump image is too long, can't execute it. "
+        "Please, make paths to files shorter.\n");
+        return DEDLIST_STATUS_ERROR_TOO_LONG_CMD_GEN_DUMP_IMG;
+    }
+
+    // TODO - разобраться почему не работает!
+    //system(cmd);
+
+    system( "dot .\\dumps\\dedlist_dump.dot -Tjpg -o .\\dumps\\dedlist_dump.jpg" );
     fprintf(stderr, "Dedlist dump image is generated!\n");
+
+    return DEDLIST_STATUS_OK;
+}
+
+inline DedlistStatusCode show_dump_img_( )
+{
+    system(DUMP_IMG_FILE_PATH);
 
     return DEDLIST_STATUS_OK;
 }
@@ -353,15 +383,15 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
     FILE *dot_file = NULL;
 
     // TODO - следить за возвращенным DedlistStatus
-    create_tmp_dot_file_( DUMP_DOT_FILE_NAME, &dot_file );
+    create_tmp_dot_file_( DUMP_DOT_FILE_PATH, &dot_file );
 
     write_dot_file_for_dump_(dot_file, dedlist_ptr, verify_res, file, line, func );
 
-    //generate_dump_img_( dot_file, DUMP_IMG_FILE_NAME );
-
-    //TODO - показывать картинку
+    generate_dump_img_( );
 
     free_dot_file_(dot_file);
+
+    show_dump_img_( );
 }
 
 void dedlist_print_verify_res_(FILE *stream, int verify_res)
@@ -371,7 +401,7 @@ void dedlist_print_verify_res_(FILE *stream, int verify_res)
     {
         if (verify_res & ( 1 << ind ))
         {
-            printf("----> %s\n", dedlist_verification_messages[ind]);
+            fprintf(stream, "----> %s\n", dedlist_verification_messages[ind]);
         }
     }
 }

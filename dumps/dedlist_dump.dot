@@ -5,8 +5,8 @@ bgcolor="#2D4059";
 
 NODE_TEXT[shape=note, fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
-label = "DEDLIST DUMP:\nDedlist[00000060ccbffdb0] (&dedlist) declared in src/main.cpp(14), in function main.\nSTACK_DUMP() called from src/main.cpp(16), from function main.\nDedlist verification result: <0>
+color="#EA5455", fillcolor="#ECC237",
+label = "DEDLIST DUMP:\nDedlist[0000004f833ff810] (&dedlist) declared in src/main.cpp(16), in function main.\nSTACK_DUMP() called from src/main.cpp(18), from function main.\ncapacity: 6; free: 5; nodes: [000001c7585b1440].Dedlist verification result: <0>
 "]
 
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "dedlist.h"
 
@@ -9,9 +10,12 @@ int main()
 
     //printf("<\\n>\n");
 
+
     VoidDedlist dedlist = {};
 
     dedlist_ctor(&dedlist, 5);
+
+
 
     DEDLIST_DUMP(&dedlist, 0);
 

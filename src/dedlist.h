@@ -53,9 +53,6 @@ struct VoidDedlist
 {
     DedlistNode *nodes = NULL;
     size_t capacity = 0;
-
-    //ptrdiff_t head = 0;   // head = next(0)
-    //ptrdiff_t tail = 0;   // tail = prev(0)
     ptrdiff_t free = 0;
 
 #ifdef DEDLIST_DO_DUMP
@@ -85,11 +82,15 @@ __attribute__ ((unused)) static const char *dedlist_verification_messages[] =
 #undef DEF_VERIFY_FLAG
 #endif // DEDLIST_DO_DUMP
 
+#ifdef DEDLIST_DO_DUMP
 //! @note includes path to the file
-__attribute__ ((unused)) static const char *DUMP_DOT_FILE_NAME = ".\\dumps\\dedlist_dump.dot";
+__attribute__ ((unused)) static const char *DUMP_DOT_FILE_PATH = ".\\dumps\\dedlist_dump.dot";
 
 //! @note includes path to the file
-__attribute__ ((unused)) static const char *DUMP_IMG_FILE_NAME = ".\\dumps\\dedlist_dump.jpg";
+__attribute__ ((unused)) static const char *DUMP_IMG_FILE_PATH = ".\\dumps\\dedlist_dump.jpg";
+
+__attribute__ ((unused)) static const size_t MAX_CMD_GEN_DUMP_IMG_LENGHT = 256;
+#endif // DEDLIST_DO_DUMP
 
 //------------------------------------------------------------------------------------------------------
 
