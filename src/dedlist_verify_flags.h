@@ -1,7 +1,7 @@
 
 // DSL
 #define _DEDLIST_PTR (dedlist_ptr)
-#define _IS_PTRDIFF_TOO_BIG(x_) ( _x >= PTRDIFF_MAX - 10 )
+#define _IS_PTRDIFF_TOO_BIG(x_) ( x_ >= PTRDIFF_MAX - 10 )
 #define _CHECK_OCCUPIED_ELEMS() verify_check_occupied_elems(_DEDLIST_PTR)
 #define _CHECK_FREE_ELEMS() verify_check_free_elems(_DEDLIST_PTR)
 

@@ -14,6 +14,7 @@ digraph {
         color="#ECC237", fillcolor="#EA5455",
         label = "{ <i>ind: 0 }|{ data:\nNULL} | {<p>prev:\n2 |<n>next:\n1}"];
 
+
     NODE_1[shape="record", fontname="verdana",
         style=bold, style=filled,
         color="#ECC237", fillcolor="#EA5455",

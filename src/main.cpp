@@ -7,7 +7,15 @@
 int main()
 {
 
+    //printf("<\\n>\n");
 
+    VoidDedlist dedlist = {};
+
+    dedlist_ctor(&dedlist, 5);
+
+    DEDLIST_DUMP(&dedlist, 0);
+
+    dedlist_dtor(&dedlist);
 
     return 0;
 }

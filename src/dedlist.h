@@ -24,7 +24,7 @@ enum DedlistStatusCode
 #undef DEF_STATUS_CODE
 
 #ifdef DEDLIST_DO_DUMP
-#define DEF_VERIFY_FLAG(bit, name, message, cond) DEDLIST_VERIFY_##name = id,
+#define DEF_VERIFY_FLAG(bit, name, message, cond) DEDLIST_VERIFY_##name = bit,
 enum DedlistVerifyResFlag
 {
     #include "dedlist_verify_flags.h"
@@ -65,8 +65,10 @@ struct VoidDedlist
 
 //------------------------------------------------------------------------------------------------------
 
+//TODO - unused? беда в том, что оно попадает в единицу трансляции main,
+// а там оно правда не использутся
 #define DEF_STATUS_CODE(id, name, message) message,
-const char *dedlist_status_code_messages[] =
+__attribute__ ((unused)) static const char *dedlist_status_code_messages[] =
 {
     #include "dedlist_status_codes.h"
     "FICTIONAL_MESSAGE!"
@@ -75,13 +77,19 @@ const char *dedlist_status_code_messages[] =
 
 #ifdef DEDLIST_DO_DUMP
 #define DEF_VERIFY_FLAG(bit, name, message, cond) #bit ": " message,
-const char *dedlist_verification_messages[] =
+__attribute__ ((unused)) static const char *dedlist_verification_messages[] =
 {
     #include "dedlist_verify_flags.h"
     "FICTIONAL_MESSAGE!"
 };
 #undef DEF_VERIFY_FLAG
 #endif // DEDLIST_DO_DUMP
+
+//! @note includes path to the file
+__attribute__ ((unused)) static const char *DUMP_DOT_FILE_NAME = ".\\dumps\\dedlist_dump.dot";
+
+//! @note includes path to the file
+__attribute__ ((unused)) static const char *DUMP_IMG_FILE_NAME = ".\\dumps\\dedlist_dump.jpg";
 
 //------------------------------------------------------------------------------------------------------
 
@@ -123,7 +131,7 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
 #define DEDLIST_DUMP( dedlist_ptr, verify_res ) dedlist_dump_(  dedlist_ptr,        \
                                                                 verify_res,         \
                                                                 __FILE__,           \
-                                                                __LINE__            \
+                                                                __LINE__,            \
                                                                 __func__ )          \
 
 #define DEDLIST_SELFCHECK( dedlist_ptr ) {                              \
@@ -142,6 +150,8 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
 #endif // DEDLIST_DO_DUMP
 
 void print_dedlist_status_code_message( DedlistStatusCode code, FILE *stream);
+
+void dedlist_print_verify_res_(FILE *stream, int verify_res);
 
 ptrdiff_t dedlist_get_head_ind( VoidDedlist *dedlist_ptr );
 
