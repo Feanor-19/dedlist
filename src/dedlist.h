@@ -126,6 +126,15 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
                                                                 __LINE__            \
                                                                 __func__ )          \
 
+#define DEDLIST_SELFCHECK( dedlist_ptr ) {                              \
+    dl_verify_res_t verify_res = dedlist_verify( dedlist_ptr );         \
+    if ( verify_res != 0 )                                              \
+    {                                                                   \
+        DEDLIST_DUMP(dedlist_ptr, verify_res);                          \
+        return DEDLIST_STATUS_ERROR_VERIFY;                             \
+    }                                                                   \
+}
+
 #else // DEDLIST_DO_DUMP
 
 #define DEDLIST_DUMP( dedlist_ptr, verify_res ) ((void) 0)

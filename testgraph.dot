@@ -1,0 +1,77 @@
+digraph {
+    rankdir=LR;
+    bgcolor="#2D4059";
+
+    NODE_0[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#EA5455",
+        label = "{ <i>ind: 0 }|{ data:\nNULL} | {<p>prev:\n2 |<n>next:\n1}"];
+
+    NODE_1[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#EA5455",
+        label = "{ <i>ind: 1 }|{ data:\ndat1} | {<p>prev:\n0 |<n>next:\n2}"];
+    NODE_2[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#EA5455",
+        label = "{ <i>ind: 2 }|{ data:\ndat2} | {<p>prev:\n1 |<n>next:\n3}"];
+    NODE_3[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#EA5455",
+        label = "{ <i>ind: 3 }|{ data:\ndat3} | {<p>prev:\n2 |<n>next:\n0}"];
+
+
+    NODE_4[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#8ccb5e",
+        label = "{ <i>ind: 4 }|{ data:\nfree} | {<p>prev:\n-1 |<n>next:\n5}"];
+    NODE_5[shape="record", fontname="verdana",
+        style=bold, style=filled,
+        color="#ECC237", fillcolor="#8ccb5e",
+        label = "{ <i>ind: 5 }|{ data:\nfree} | {<p>prev:\n-1 |<n>next:\n0}"];
+
+
+    /* #8ccb5e green */
+
+    FICTIONAL[shape=tripleoctagon, style=filled,
+    fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
+
+    HEAD[shape=tripleoctagon, style=filled,
+    fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
+
+    TAIL[shape=tripleoctagon, style=filled,
+    fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
+
+    FREE[shape=tripleoctagon, style=filled,
+    fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
+
+
+    NODE_0->NODE_1[weight=10, color="#2D4059"];
+    NODE_1->NODE_2[weight=10, color="#2D4059"];
+    NODE_2->NODE_3[weight=10, color="#2D4059"];
+    NODE_3->NODE_4[weight=10, color="#2D4059"];
+    NODE_4->NODE_5[weight=10, color="#2D4059"];
+
+
+    { rank=same; FICTIONAL; NODE_0; }
+    { rank=same; HEAD; NODE_1; }
+    { rank=same; TAIL; NODE_3; }
+    { rank=same; FREE; NODE_4; }
+
+
+    NODE_0:<p>->NODE_2[color="#F07B3F", penwidth=2];
+    NODE_0:<n>->NODE_1[color="#FFD460", penwidth=2];
+
+    NODE_1:<p>->NODE_0[color="#F07B3F", penwidth=2];
+    NODE_1:<n>->NODE_2[color="#FFD460", penwidth=2];
+
+    NODE_2:<p>->NODE_1[color="#F07B3F", penwidth=2];
+    NODE_2:<n>->NODE_3[color="#FFD460", penwidth=2];
+
+    NODE_3:<p>->NODE_2[color="#F07B3F", penwidth=2];
+    NODE_3:<n>->NODE_0[color="#FFD460", penwidth=2];
+
+
+    NODE_4:<n>->NODE_5[color="#8ccb5e", penwidth=2];
+
+}
