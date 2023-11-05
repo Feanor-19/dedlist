@@ -3,32 +3,90 @@
 
 #include "dedlist.h"
 
-void print_dedlist_status_code_message( DedlistStatusCode code, FILE *stream)
+inline int is_anchor_valid_for_insert( Dedlist *dedlist_ptr, size_t anchor )
+{
+    if ( anchor < dedlist_ptr->capacity )
+    {
+        if ( dedlist_ptr->nodes[anchor].prev != -1 )
+            return 1;
+        else
+            return 0;
+    }
+
+    return 0;
+}
+
+DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
+                                    size_t anchor,
+                                    Elem_t value,
+                                    size_t* inserted_elem_anchor_ptr)
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+    assert(inserted_elem_anchor_ptr);
+
+    if ( !is_anchor_valid_for_insert( dedlist_ptr, anchor ) )
+        return DEDLIST_STATUS_ERROR_INVALID_ANCHOR_FOR_INSERT;
+
+    ptrdiff_t new_elem_ind = dedlist_ptr->free;
+
+    dedlist_ptr->free = dedlist_ptr->nodes[new_elem_ind].next;
+
+    dedlist_ptr->nodes[new_elem_ind].data = value;
+
+
+    ptrdiff_t tmp = dedlist_ptr->nodes[anchor].next;
+    dedlist_ptr->nodes[anchor].next = new_elem_ind;
+    dedlist_ptr->nodes[new_elem_ind].next = tmp;
+    dedlist_ptr->nodes[tmp].prev = new_elem_ind;
+
+    dedlist_ptr->nodes[new_elem_ind].prev = anchor;
+
+    *inserted_elem_anchor_ptr = (size_t) new_elem_ind;
+
+    return DEDLIST_STATUS_OK;
+}
+
+DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
+                                        Elem_t value,
+                                        size_t* inserted_elem_anchor_ptr )
+{
+    return dedlist_insert( dedlist_ptr, dedlist_get_head_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
+}
+
+DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
+                                        Elem_t value,
+                                        size_t* inserted_elem_anchor_ptr )
+{
+    return dedlist_insert( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
+}
+
+
+void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream)
 {
     fprintf(stream, "%s", dedlist_status_code_messages[code]);
 }
 
-void inline init_zeroth_elem_( VoidDedlist *dedlist_ptr )
+void inline init_zeroth_elem_( Dedlist *dedlist_ptr )
 {
     assert(dedlist_ptr);
 
-    dedlist_ptr->nodes[0].data_ptr = NULL;
+    dedlist_ptr->nodes[0].data = ELEM_T_DEFAULT_VALUE;
     dedlist_ptr->nodes[0].next = 0;
     dedlist_ptr->nodes[0].prev = 0;
 }
 
-void inline init_free_elem( VoidDedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
+void inline init_free_elem( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
 {
     assert(dedlist_ptr);
 
-    dedlist_ptr->nodes[free_elem_ind].data_ptr = NULL;
+    dedlist_ptr->nodes[free_elem_ind].data = ELEM_T_DEFAULT_VALUE;
     dedlist_ptr->nodes[free_elem_ind].prev = -1;
     dedlist_ptr->nodes[free_elem_ind].next = dedlist_ptr->free;
 
     dedlist_ptr->free = free_elem_ind;
 }
 
-void inline init_new_free_elems_( VoidDedlist *dedlist_ptr, ptrdiff_t start_with )
+void inline init_new_free_elems_( Dedlist *dedlist_ptr, ptrdiff_t start_with )
 {
     assert( dedlist_ptr );
 
@@ -38,7 +96,7 @@ void inline init_new_free_elems_( VoidDedlist *dedlist_ptr, ptrdiff_t start_with
     }
 }
 
-DedlistStatusCode dedlist_ctor_( VoidDedlist *dedlist_ptr, size_t default_size
+DedlistStatusCode dedlist_ctor_( Dedlist *dedlist_ptr, size_t default_size
 #ifdef DEDLIST_DO_DUMP
                                 , DedlistOrigInfo orig_info
 #endif
@@ -66,7 +124,7 @@ DedlistStatusCode dedlist_ctor_( VoidDedlist *dedlist_ptr, size_t default_size
     return DEDLIST_STATUS_OK;
 }
 
-DedlistStatusCode dedlist_dtor( VoidDedlist *dedlist_ptr )
+DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 {
     if (dedlist_ptr->nodes)
         free(dedlist_ptr->nodes);
@@ -85,7 +143,7 @@ DedlistStatusCode dedlist_dtor( VoidDedlist *dedlist_ptr )
 
 #ifdef DEDLIST_DO_DUMP
 
-inline int verify_check_occupied_elems( VoidDedlist *dedlist_ptr )
+inline int verify_check_occupied_elems( Dedlist *dedlist_ptr )
 {
     ptrdiff_t curr_ind = dedlist_get_head_ind( dedlist_ptr );
     size_t iterations = 0;
@@ -112,7 +170,7 @@ inline int verify_check_occupied_elems( VoidDedlist *dedlist_ptr )
     return 1;
 }
 
-inline int verify_check_free_elems( VoidDedlist *dedlist_ptr )
+inline int verify_check_free_elems( Dedlist *dedlist_ptr )
 {
     ptrdiff_t curr_ind = dedlist_ptr->free;
     size_t iterations = 0;
@@ -133,7 +191,7 @@ inline int verify_check_free_elems( VoidDedlist *dedlist_ptr )
 }
 
 #define DEF_VERIFY_FLAG(bit, name, message, cond) if ((cond)) {verify_res |= (1 << (bit));}
-dl_verify_res_t dedlist_verify( VoidDedlist *dedlist_ptr )
+dl_verify_res_t dedlist_verify( Dedlist *dedlist_ptr )
 {
     dl_verify_res_t verify_res = 0;
 
@@ -155,7 +213,7 @@ inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_name, FILE *
 
 // TODO - в другой файл? что делать с такой большой функцией?
 inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
-                                                    VoidDedlist *dedlist_ptr,
+                                                    Dedlist *dedlist_ptr,
                                                     dl_verify_res_t verify_res,
                                                     const char *called_from_file,
                                                     const int called_from_line,
@@ -174,10 +232,14 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 #define COLOR_EDGE_NEXT "#FFD460"
 #define COLOR_EDGE_FREE "#8ccb5e"
 
+    // splines = ortho делает стрелочки с прямыми углами, но это очень плохо работает
+    // с выстроенными в ряд узлами
+
     //---------------------------------------------------------------------
     fprintf(dot_file,   "digraph{\n"
                         "rankdir=LR;\n"
-                        "bgcolor=\"" COLOR_BG "\";\n\n\n");
+                        "bgcolor=\"" COLOR_BG "\";\n"
+                        "\n\n\n");
     //---------------------------------------------------------------------
 
     //---------------------------------NODE_TEXT--------------------------
@@ -186,9 +248,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                         "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"
                         "label = \"");
     // TODO - добавить время дампа?
-    fprintf(dot_file,   "DEDLIST DUMP:\\n"
-                        "Dedlist[%p] (%s) declared in %s(%d), in function %s.\\n"
-                        "STACK_DUMP() called from %s(%d), from function %s.\\n"
+    fprintf(dot_file,   "Dedlist[%p] (%s) declared in %s(%d), in function %s.\\n"
+                        "DEDLIST_DUMP() called from %s(%d), from function %s.\\n"
                         "capacity: %lld; free: %lld; nodes: [%p].",
                         dedlist_ptr,
                         dedlist_ptr->orig_info.dedlist_name,
@@ -340,6 +401,8 @@ inline DedlistStatusCode generate_dump_img_( )
                                     DUMP_DOT_FILE_PATH,
                                     DUMP_IMG_FILE_PATH);
 
+    //int written_chars = snprintf(cmd, MAX_CMD_GEN_DUMP_IMG_LENGHT, "dot .\\dumps\\dedlist_dump.dot -Tjpg -o .\\dumps\\dedlist_dump.jpg");
+
     printf("<%s>\n", cmd);
 
     if ( written_chars >= (int) MAX_CMD_GEN_DUMP_IMG_LENGHT)
@@ -349,10 +412,8 @@ inline DedlistStatusCode generate_dump_img_( )
         return DEDLIST_STATUS_ERROR_TOO_LONG_CMD_GEN_DUMP_IMG;
     }
 
-    // TODO - разобраться почему не работает!
-    //system(cmd);
+    system(cmd);
 
-    system( "dot .\\dumps\\dedlist_dump.dot -Tjpg -o .\\dumps\\dedlist_dump.jpg" );
     fprintf(stderr, "Dedlist dump image is generated!\n");
 
     return DEDLIST_STATUS_OK;
@@ -373,7 +434,7 @@ inline DedlistStatusCode free_dot_file_( FILE * dot_tmp_file )
     return DEDLIST_STATUS_OK;
 }
 
-void dedlist_dump_( VoidDedlist *dedlist_ptr,
+void dedlist_dump_( Dedlist *dedlist_ptr,
                     dl_verify_res_t verify_res,
                     const char *file,
                     const int line,
@@ -387,9 +448,9 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
 
     write_dot_file_for_dump_(dot_file, dedlist_ptr, verify_res, file, line, func );
 
-    generate_dump_img_( );
-
     free_dot_file_(dot_file);
+
+    generate_dump_img_( );
 
     show_dump_img_( );
 }
@@ -408,16 +469,16 @@ void dedlist_print_verify_res_(FILE *stream, int verify_res)
 
 #endif //DEDLIST_DO_DUMP
 
-ptrdiff_t dedlist_get_head_ind( VoidDedlist *dedlist_ptr )
+size_t dedlist_get_head_ind( Dedlist *dedlist_ptr )
 {
     assert(dedlist_ptr);
 
-    return dedlist_ptr->nodes[0].next;
+    return (size_t) dedlist_ptr->nodes[0].next;
 }
 
-ptrdiff_t dedlist_get_tail_ind( VoidDedlist *dedlist_ptr )
+size_t dedlist_get_tail_ind( Dedlist *dedlist_ptr )
 {
     assert(dedlist_ptr);
 
-    return dedlist_ptr->nodes[0].prev;
+    return (size_t) dedlist_ptr->nodes[0].prev;
 }

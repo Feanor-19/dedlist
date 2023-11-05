@@ -12,6 +12,15 @@
 */
 #define DEDLIST_DO_DUMP
 
+typedef int Elem_t;
+const Elem_t ELEM_T_DEFAULT_VALUE = 0;
+inline void dedlist_print_elem_t(FILE *stream, Elem_t value)
+{
+    fprintf(stream, "%d", value);
+}
+
+//------------------------------------------------------------------------------------------------------
+
 typedef uint32_t dl_verify_res_t;
 
 //------------------------------------------------------------------------------------------------------
@@ -34,7 +43,7 @@ enum DedlistVerifyResFlag
 
 struct DedlistNode
 {
-    void *data_ptr = NULL;
+    Elem_t data = ELEM_T_DEFAULT_VALUE;
     ptrdiff_t next = 0;
     ptrdiff_t prev = -1;
 };
@@ -49,7 +58,7 @@ struct DedlistOrigInfo
 };
 #endif // DEDLIST_DO_DUMP
 
-struct VoidDedlist
+struct Dedlist
 {
     DedlistNode *nodes = NULL;
     size_t capacity = 0;
@@ -86,6 +95,8 @@ __attribute__ ((unused)) static const char *dedlist_verification_messages[] =
 //! @note includes path to the file
 __attribute__ ((unused)) static const char *DUMP_DOT_FILE_PATH = ".\\dumps\\dedlist_dump.dot";
 
+// TODO - погуглить про const в h, еще возможно выносить константы в отдельный cpp + extern
+
 //! @note includes path to the file
 __attribute__ ((unused)) static const char *DUMP_IMG_FILE_PATH = ".\\dumps\\dedlist_dump.jpg";
 
@@ -94,7 +105,7 @@ __attribute__ ((unused)) static const size_t MAX_CMD_GEN_DUMP_IMG_LENGHT = 256;
 
 //------------------------------------------------------------------------------------------------------
 
-DedlistStatusCode dedlist_ctor_( VoidDedlist *dedlist_ptr, size_t default_size
+DedlistStatusCode dedlist_ctor_( Dedlist *dedlist_ptr, size_t default_size
 #ifdef DEDLIST_DO_DUMP
                                 , DedlistOrigInfo orig_info
 #endif
@@ -118,12 +129,12 @@ DedlistStatusCode dedlist_ctor_( VoidDedlist *dedlist_ptr, size_t default_size
 
 #endif // DEDLIST_DO_DUMP
 
-DedlistStatusCode dedlist_dtor( VoidDedlist *dedlist_ptr );
+DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr );
 
 #ifdef DEDLIST_DO_DUMP
-dl_verify_res_t dedlist_verify( VoidDedlist *dedlist_ptr );
+dl_verify_res_t dedlist_verify( Dedlist *dedlist_ptr );
 
-void dedlist_dump_( VoidDedlist *dedlist_ptr,
+void dedlist_dump_( Dedlist *dedlist_ptr,
                     dl_verify_res_t verify_res,
                     const char *file,
                     const int line,
@@ -150,12 +161,27 @@ void dedlist_dump_( VoidDedlist *dedlist_ptr,
 
 #endif // DEDLIST_DO_DUMP
 
-void print_dedlist_status_code_message( DedlistStatusCode code, FILE *stream);
+//! @brief Inserts value after element located at anchor.
+//! Puts inserted element's anchor by the given pointer.
+DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
+                                    size_t anchor,
+                                    Elem_t value,
+                                    size_t* inserted_elem_anchor_ptr);
+
+DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
+                                        Elem_t value,
+                                        size_t* inserted_elem_anchor_ptr );
+
+DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
+                                        Elem_t value,
+                                        size_t* inserted_elem_anchor_ptr );
+
+void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream);
 
 void dedlist_print_verify_res_(FILE *stream, int verify_res);
 
-ptrdiff_t dedlist_get_head_ind( VoidDedlist *dedlist_ptr );
+size_t dedlist_get_head_ind( Dedlist *dedlist_ptr );
 
-ptrdiff_t dedlist_get_tail_ind( VoidDedlist *dedlist_ptr );
+size_t dedlist_get_tail_ind( Dedlist *dedlist_ptr );
 
 #endif

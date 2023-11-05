@@ -7,15 +7,17 @@
 
 int main()
 {
-
-    //printf("<\\n>\n");
-
-
-    VoidDedlist dedlist = {};
+    Dedlist dedlist = {};
 
     dedlist_ctor(&dedlist, 5);
 
+    size_t x_anchor_1 = -1;
+    dedlist_push_head(&dedlist, 19, &x_anchor_1);
+    printf("x_anchor : <%lld>\n", x_anchor_1);
 
+    size_t x_anchor_2 = -1;
+    dedlist_push_head(&dedlist, 23, &x_anchor_2);
+    printf("x_anchor : <%lld>\n", x_anchor_2);
 
     DEDLIST_DUMP(&dedlist, 0);
 
