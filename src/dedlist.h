@@ -1,9 +1,8 @@
 #ifndef DEDLIST_H
 #define DEDLIST_H
 
-#include "stdio.h"
-#include "stdint.h"
-#include "limits.h"
+#include <stdio.h>
+#include <stdint.h>
 
 /*
     AVAILABLE DEFINES:
@@ -71,10 +70,8 @@ struct Dedlist
 
 //------------------------------------------------------------------------------------------------------
 
-//TODO - unused? беда в том, что оно попадает в единицу трансляции main,
-// а там оно правда не использутся
 #define DEF_STATUS_CODE(id, name, message) message,
-__attribute__ ((unused)) static const char *dedlist_status_code_messages[] =
+const char* const dedlist_status_code_messages[] =
 {
     #include "dedlist_status_codes.h"
     "FICTIONAL_MESSAGE!"
@@ -83,7 +80,7 @@ __attribute__ ((unused)) static const char *dedlist_status_code_messages[] =
 
 #ifdef DEDLIST_DO_DUMP
 #define DEF_VERIFY_FLAG(bit, name, message, cond) #bit ": " message,
-__attribute__ ((unused)) static const char *dedlist_verification_messages[] =
+const char* const dedlist_verification_messages[] =
 {
     #include "dedlist_verify_flags.h"
     "FICTIONAL_MESSAGE!"
@@ -93,14 +90,12 @@ __attribute__ ((unused)) static const char *dedlist_verification_messages[] =
 
 #ifdef DEDLIST_DO_DUMP
 //! @note includes path to the file
-__attribute__ ((unused)) static const char *DUMP_DOT_FILE_PATH = ".\\dumps\\dedlist_dump.dot";
-
-// TODO - погуглить про const в h, еще возможно выносить константы в отдельный cpp + extern
+const char* const DUMP_DOT_FILE_PATH = ".\\dumps\\dedlist_dump.dot";
 
 //! @note includes path to the file
-__attribute__ ((unused)) static const char *DUMP_IMG_FILE_PATH = ".\\dumps\\dedlist_dump.jpg";
+const char* const DUMP_IMG_FILE_PATH = ".\\dumps\\dedlist_dump.jpg";
 
-__attribute__ ((unused)) static const size_t MAX_CMD_GEN_DUMP_IMG_LENGHT = 256;
+const size_t MAX_CMD_GEN_DUMP_IMG_LENGHT = 256;
 #endif // DEDLIST_DO_DUMP
 
 //------------------------------------------------------------------------------------------------------
