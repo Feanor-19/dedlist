@@ -25,7 +25,7 @@ int main()
     dedlist_push_head(&dedlist, 17, &x_anchor_4);
     printf("x_anchor_4 : <%lld>\n", x_anchor_4);
 
-    dedlist_delete(&dedlist, x_anchor_3);
+    dedlist_delete_head(&dedlist);
 
     DEDLIST_DUMP(&dedlist, 0);
 

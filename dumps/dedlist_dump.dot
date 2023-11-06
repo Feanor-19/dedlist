@@ -6,7 +6,7 @@ bgcolor="#2D4059";
 NODE_TEXT[shape=note, fontname="verdana",
 style=bold, style=filled,
 color="#EA5455", fillcolor="#ECC237",
-label = "Dedlist[000000d2695ff900] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(30), from function main.\ncapacity: 6; free: 5; nodes: [000002c98edb1440].Dedlist verification result: <0>
+label = "Dedlist[00000045b1bff870] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(30), from function main.\ncapacity: 6; free: 4; nodes: [0000015fa5b41440].Dedlist verification result: <0>
 "]
 
 
@@ -16,7 +16,7 @@ color="#EA5455", fillcolor="#ECC237",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 0</td></tr>
 <tr><td colspan="2">data: FICTIONAL</td></tr>
-<tr><td>prev: 2</td><td>next: 4</td></tr></table>>];
+<tr><td>prev: 2</td><td>next: 1</td></tr></table>>];
 
 
 NODE_1[shape="record", fontname="verdana",
@@ -25,7 +25,7 @@ color="#ECC237", fillcolor="#EA5455",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 1</td></tr>
 <tr><td colspan="2">data: 23</td></tr>
-<tr><td>prev: 4</td><td>next: 2</td></tr></table>>];
+<tr><td>prev: 0</td><td>next: 5</td></tr></table>>];
 
 NODE_2[shape="record", fontname="verdana",
 style=bold, style=filled,
@@ -33,7 +33,7 @@ color="#ECC237", fillcolor="#EA5455",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 2</td></tr>
 <tr><td colspan="2">data: 19</td></tr>
-<tr><td>prev: 1</td><td>next: 0</td></tr></table>>];
+<tr><td>prev: 5</td><td>next: 0</td></tr></table>>];
 
 NODE_3[shape="record", fontname="verdana",
 style=bold, style=filled,
@@ -45,19 +45,19 @@ label = <<table cellspacing="0">
 
 NODE_4[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
+color="#ECC237", fillcolor="#8ccb5e",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 4</td></tr>
-<tr><td colspan="2">data: 17</td></tr>
-<tr><td>prev: 0</td><td>next: 1</td></tr></table>>];
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 3</td></tr></table>>];
 
 NODE_5[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#8ccb5e",
+color="#ECC237", fillcolor="#EA5455",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 5</td></tr>
-<tr><td colspan="2">data: free</td></tr>
-<tr><td>prev: -1</td><td>next: 3</td></tr></table>>];
+<tr><td colspan="2">data: 42</td></tr>
+<tr><td>prev: 1</td><td>next: 2</td></tr></table>>];
 
 HEAD[shape=tripleoctagon, style=filled,
 fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
@@ -76,24 +76,24 @@ NODE_1->NODE_2[weight=10, style=invis];
 NODE_2->NODE_3[weight=10, style=invis];
 NODE_3->NODE_4[weight=10, style=invis];
 NODE_4->NODE_5[weight=10, style=invis];
-HEAD->NODE_4[style=invis];
+HEAD->NODE_1[style=invis];
 TAIL->NODE_2[style=invis];
-FREE->NODE_5[style=invis];
+FREE->NODE_4[style=invis];
 
 
 NODE_0->NODE_2[color="#F07B3F", penwidth=2];
-NODE_0->NODE_4[color="#FFD460", penwidth=2];
+NODE_0->NODE_1[color="#FFD460", penwidth=2];
 
-NODE_1->NODE_4[color="#F07B3F", penwidth=2];
-NODE_1->NODE_2[color="#FFD460", penwidth=2];
+NODE_1->NODE_0[color="#F07B3F", penwidth=2];
+NODE_1->NODE_5[color="#FFD460", penwidth=2];
 
-NODE_2->NODE_1[color="#F07B3F", penwidth=2];
+NODE_2->NODE_5[color="#F07B3F", penwidth=2];
 NODE_2->NODE_0[color="#FFD460", penwidth=2];
 
 NODE_3->NODE_0[color="#8ccb5e", penwidth=2];
-NODE_4->NODE_0[color="#F07B3F", penwidth=2];
-NODE_4->NODE_1[color="#FFD460", penwidth=2];
+NODE_4->NODE_3[color="#8ccb5e", penwidth=2];
+NODE_5->NODE_1[color="#F07B3F", penwidth=2];
+NODE_5->NODE_2[color="#FFD460", penwidth=2];
 
-NODE_5->NODE_3[color="#8ccb5e", penwidth=2];
 
 }

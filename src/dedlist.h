@@ -187,6 +187,10 @@ DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
                                         Elem_t value,
                                         size_t* inserted_elem_anchor_ptr );
 
+DedlistStatusCode dedlist_delete_head( Dedlist *dedlist_ptr );
+
+DedlistStatusCode dedlist_delete_tail( Dedlist *dedlist_ptr );
+
 DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr );
 
 void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream);

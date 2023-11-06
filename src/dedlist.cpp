@@ -81,6 +81,20 @@ DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
     return dedlist_insert( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
 }
 
+DedlistStatusCode dedlist_delete_head( Dedlist *dedlist_ptr )
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+
+    return dedlist_delete(dedlist_ptr, dedlist_get_head_ind(dedlist_ptr));
+}
+
+DedlistStatusCode dedlist_delete_tail( Dedlist *dedlist_ptr )
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+
+    return dedlist_delete(dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr));
+}
+
 size_t dedlist_get_head_ind( Dedlist *dedlist_ptr )
 {
     DEDLIST_SELFCHECK(dedlist_ptr);
