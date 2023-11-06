@@ -27,6 +27,8 @@ int main()
 
     dedlist_delete_head(&dedlist);
 
+    dedlist_delete_tail(&dedlist);
+
     DEDLIST_DUMP(&dedlist, 0);
 
     dedlist_dtor(&dedlist);

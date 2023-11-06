@@ -358,17 +358,17 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
         if ( !is_node_free_(dedlist_ptr, ind) )
         {
             // occupied node
-            // TODO - сделать печать любых типов, а не int
             fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\n"
                                 "color=\"" COLOR_OCCUP_NODE_COLOR "\", fillcolor=\"" COLOR_OCCUP_NODE_FILL "\",\n"
                                 "label = <<table cellspacing=\"0\">\n"
                                 "<tr><td colspan=\"2\">ind: %llu</td></tr>\n"
-                                "<tr><td colspan=\"2\">data: %d</td></tr>\n"
+                                "<tr><td colspan=\"2\">data: ",
+                                ind,
+                                ind);
+            dedlist_print_elem_t(dot_file, dedlist_ptr->nodes[ind].data );
+            fprintf(dot_file,   "</td></tr>\n"
                                 "<tr><td>prev: %td</td><td>next: %td</td></tr></table>>];\n\n",
-                                ind,
-                                ind,
-                                *( (int*)(dedlist_ptr->nodes + ind) ),
                                 dedlist_ptr->nodes[ind].prev,
                                 dedlist_ptr->nodes[ind].next);
         }
@@ -431,7 +431,6 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //--------------------------------------EDGES--------------------------
     for (size_t ind = 0; ind < dedlist_ptr->capacity; ind++)
     {
-        // TODO - вынести в ф-ю проверку на то, какой тип ячейки
         if ( !is_node_free_(dedlist_ptr, ind) )
         {
             // occupied node
