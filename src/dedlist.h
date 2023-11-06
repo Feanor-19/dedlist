@@ -154,14 +154,27 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
 #define DEDLIST_DUMP( dedlist_ptr, verify_res ) ((void) 0)
 
+#define DEDLIST_SELFCHECK( dedlist_ptr ) ((void) 0)
+
 #endif // DEDLIST_DO_DUMP
 
 //! @brief call dedlist_func, returning DedlistStatusCode, and if
 // returned code isn't OK, immediately returns it.
-#define DL_WRP(dedlist_func) {                              \
+#define DL_WRP_RET(dedlist_func) {                              \
     DedlistStatusCode code = dedlist_func;                  \
     if (code != DEDLIST_STATUS_OK)                          \
         return code;                                        \
+}
+
+//! @brief call dedlist_func, returning DedlistStatusCode, and if
+// returned code isn't OK, prints status code and returns void.
+#define DL_WRP_PRINT(dedlist_func) {                        \
+    DedlistStatusCode code = dedlist_func;                  \
+    if (code != DEDLIST_STATUS_OK)                          \
+    {                                                       \
+        dedlist_print_status_code_message(code, stderr);    \
+        return;                                             \
+    }                                                       \
 }
 
 //! @brief Inserts value after element located at anchor.

@@ -6,7 +6,7 @@ bgcolor="#2D4059";
 NODE_TEXT[shape=note, fontname="verdana",
 style=bold, style=filled,
 color="#EA5455", fillcolor="#ECC237",
-label = "Dedlist[00000043255ffc30] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(30), from function main.\ncapacity: 6; free: 4; nodes: [0000015822e81440].Dedlist verification result: <0>
+label = "Dedlist[0000002e6c1ff660] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(30), from function main.\ncapacity: 11; free: 7; nodes: [00000142ae581440].Dedlist verification result: <0>
 "]
 
 
@@ -16,24 +16,24 @@ color="#EA5455", fillcolor="#ECC237",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 0</td></tr>
 <tr><td colspan="2">data: FICTIONAL</td></tr>
-<tr><td>prev: 2</td><td>next: 1</td></tr></table>>];
+<tr><td>prev: 10</td><td>next: 9</td></tr></table>>];
 
 
 NODE_1[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
+color="#ECC237", fillcolor="#8ccb5e",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 1</td></tr>
-<tr><td colspan="2">data: 23</td></tr>
-<tr><td>prev: 0</td><td>next: 5</td></tr></table>>];
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 0</td></tr></table>>];
 
 NODE_2[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
+color="#ECC237", fillcolor="#8ccb5e",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 2</td></tr>
-<tr><td colspan="2">data: 19</td></tr>
-<tr><td>prev: 5</td><td>next: 0</td></tr></table>>];
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 1</td></tr></table>>];
 
 NODE_3[shape="record", fontname="verdana",
 style=bold, style=filled,
@@ -41,7 +41,7 @@ color="#ECC237", fillcolor="#8ccb5e",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 3</td></tr>
 <tr><td colspan="2">data: free</td></tr>
-<tr><td>prev: -1</td><td>next: 0</td></tr></table>>];
+<tr><td>prev: -1</td><td>next: 2</td></tr></table>>];
 
 NODE_4[shape="record", fontname="verdana",
 style=bold, style=filled,
@@ -53,11 +53,51 @@ label = <<table cellspacing="0">
 
 NODE_5[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
+color="#ECC237", fillcolor="#8ccb5e",
 label = <<table cellspacing="0">
 <tr><td colspan="2">ind: 5</td></tr>
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 4</td></tr></table>>];
+
+NODE_6[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = <<table cellspacing="0">
+<tr><td colspan="2">ind: 6</td></tr>
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 5</td></tr></table>>];
+
+NODE_7[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = <<table cellspacing="0">
+<tr><td colspan="2">ind: 7</td></tr>
+<tr><td colspan="2">data: free</td></tr>
+<tr><td>prev: -1</td><td>next: 6</td></tr></table>>];
+
+NODE_8[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = <<table cellspacing="0">
+<tr><td colspan="2">ind: 8</td></tr>
 <tr><td colspan="2">data: 42</td></tr>
-<tr><td>prev: 1</td><td>next: 2</td></tr></table>>];
+<tr><td>prev: 9</td><td>next: 10</td></tr></table>>];
+
+NODE_9[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = <<table cellspacing="0">
+<tr><td colspan="2">ind: 9</td></tr>
+<tr><td colspan="2">data: 23</td></tr>
+<tr><td>prev: 0</td><td>next: 8</td></tr></table>>];
+
+NODE_10[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = <<table cellspacing="0">
+<tr><td colspan="2">ind: 10</td></tr>
+<tr><td colspan="2">data: 19</td></tr>
+<tr><td>prev: 8</td><td>next: 0</td></tr></table>>];
 
 HEAD[shape=tripleoctagon, style=filled,
 fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
@@ -69,31 +109,41 @@ FREE[shape=tripleoctagon, style=filled,
 fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
 
 
-{rank=same; NODE_TEXT NODE_0 NODE_1 NODE_2 NODE_3 NODE_4 NODE_5 }
+{rank=same; NODE_TEXT NODE_0 NODE_1 NODE_2 NODE_3 NODE_4 NODE_5 NODE_6 NODE_7 NODE_8 NODE_9 NODE_10 }
 NODE_TEXT->NODE_0[weight=10, style=invis];
 NODE_0->NODE_1[weight=10, style=invis];
 NODE_1->NODE_2[weight=10, style=invis];
 NODE_2->NODE_3[weight=10, style=invis];
 NODE_3->NODE_4[weight=10, style=invis];
 NODE_4->NODE_5[weight=10, style=invis];
-HEAD->NODE_1[style=invis];
-TAIL->NODE_2[style=invis];
-FREE->NODE_4[style=invis];
+NODE_5->NODE_6[weight=10, style=invis];
+NODE_6->NODE_7[weight=10, style=invis];
+NODE_7->NODE_8[weight=10, style=invis];
+NODE_8->NODE_9[weight=10, style=invis];
+NODE_9->NODE_10[weight=10, style=invis];
+HEAD->NODE_9[style=invis];
+TAIL->NODE_10[style=invis];
+FREE->NODE_7[style=invis];
 
 
-NODE_0->NODE_2[color="#F07B3F", penwidth=2];
-NODE_0->NODE_1[color="#FFD460", penwidth=2];
+NODE_0->NODE_10[color="#F07B3F", penwidth=2];
+NODE_0->NODE_9[color="#FFD460", penwidth=2];
 
-NODE_1->NODE_0[color="#F07B3F", penwidth=2];
-NODE_1->NODE_5[color="#FFD460", penwidth=2];
-
-NODE_2->NODE_5[color="#F07B3F", penwidth=2];
-NODE_2->NODE_0[color="#FFD460", penwidth=2];
-
-NODE_3->NODE_0[color="#8ccb5e", penwidth=2];
+NODE_1->NODE_0[color="#8ccb5e", penwidth=2];
+NODE_2->NODE_1[color="#8ccb5e", penwidth=2];
+NODE_3->NODE_2[color="#8ccb5e", penwidth=2];
 NODE_4->NODE_3[color="#8ccb5e", penwidth=2];
-NODE_5->NODE_1[color="#F07B3F", penwidth=2];
-NODE_5->NODE_2[color="#FFD460", penwidth=2];
+NODE_5->NODE_4[color="#8ccb5e", penwidth=2];
+NODE_6->NODE_5[color="#8ccb5e", penwidth=2];
+NODE_7->NODE_6[color="#8ccb5e", penwidth=2];
+NODE_8->NODE_9[color="#F07B3F", penwidth=2];
+NODE_8->NODE_10[color="#FFD460", penwidth=2];
+
+NODE_9->NODE_0[color="#F07B3F", penwidth=2];
+NODE_9->NODE_8[color="#FFD460", penwidth=2];
+
+NODE_10->NODE_8[color="#F07B3F", penwidth=2];
+NODE_10->NODE_0[color="#FFD460", penwidth=2];
 
 
 }

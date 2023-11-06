@@ -29,7 +29,7 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 
     if (dedlist_ptr->free == 0)
     {
-        DL_WRP( dedlist_realloc_up_(dedlist_ptr) );
+        DL_WRP_RET( dedlist_realloc_up_(dedlist_ptr) );
     }
 
     ptrdiff_t new_elem_ind = dedlist_ptr->free;
@@ -480,10 +480,6 @@ inline DedlistStatusCode generate_dump_img_( )
                                     DUMP_DOT_FILE_PATH,
                                     DUMP_IMG_FILE_PATH);
 
-    //int written_chars = snprintf(cmd, MAX_CMD_GEN_DUMP_IMG_LENGHT, "dot .\\dumps\\dedlist_dump.dot -Tjpg -o .\\dumps\\dedlist_dump.jpg");
-
-    printf("<%s>\n", cmd);
-
     if ( written_chars >= (int) MAX_CMD_GEN_DUMP_IMG_LENGHT)
     {
         fprintf(stderr, "Command to generate dump image is too long, can't execute it. "
@@ -522,16 +518,15 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
     FILE *dot_file = NULL;
 
-    // TODO - следить за возвращенным DedlistStatus
-    create_tmp_dot_file_( DUMP_DOT_FILE_PATH, &dot_file );
+    DL_WRP_PRINT( create_tmp_dot_file_( DUMP_DOT_FILE_PATH, &dot_file ) );
 
-    write_dot_file_for_dump_(dot_file, dedlist_ptr, verify_res, file, line, func );
+    DL_WRP_PRINT( write_dot_file_for_dump_(dot_file, dedlist_ptr, verify_res, file, line, func ) );
 
-    free_dot_file_(dot_file);
+    DL_WRP_PRINT( free_dot_file_(dot_file) );
 
-    generate_dump_img_( );
+    DL_WRP_PRINT( generate_dump_img_( ) );
 
-    show_dump_img_( );
+    DL_WRP_PRINT( show_dump_img_( ) );
 }
 
 void dedlist_print_verify_res_(FILE *stream, int verify_res)
