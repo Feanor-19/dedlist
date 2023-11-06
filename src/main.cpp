@@ -7,7 +7,7 @@ int main()
 {
     Dedlist dedlist = {};
 
-    dedlist_ctor(&dedlist, 10);
+    dedlist_ctor(&dedlist, 2);
 
     size_t x_anchor_1 = -1;
     dedlist_push_head(&dedlist, 19, &x_anchor_1);

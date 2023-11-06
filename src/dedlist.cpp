@@ -7,7 +7,7 @@ inline int is_anchor_valid_for_insert( Dedlist *dedlist_ptr, size_t anchor )
 {
     if ( anchor < dedlist_ptr->capacity )
     {
-        if ( dedlist_ptr->nodes[anchor].prev != -1 )
+        if ( !is_node_free_(dedlist_ptr, anchor) )
             return 1;
         else
             return 0;
@@ -245,7 +245,7 @@ inline int verify_check_free_elems( Dedlist *dedlist_ptr )
     size_t iterations = 0;
     while ( curr_ind != 0 )
     {
-        if ( dedlist_ptr->nodes[curr_ind].prev != -1 )
+        if ( !is_node_free_( dedlist_ptr, curr_ind ) )
         {
             return 0;
         }
@@ -355,7 +355,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //---------------------------OTHER_NODES-------------------------------
     for (size_t ind = 1; ind < dedlist_ptr->capacity; ind++)
     {
-        if ( dedlist_ptr->nodes[ind].prev != -1 )
+        if ( !is_node_free_(dedlist_ptr, ind) )
         {
             // occupied node
             // TODO - сделать печать любых типов, а не int
@@ -432,7 +432,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     for (size_t ind = 0; ind < dedlist_ptr->capacity; ind++)
     {
         // TODO - вынести в ф-ю проверку на то, какой тип ячейки
-        if ( dedlist_ptr->nodes[ind].prev != -1 )
+        if ( !is_node_free_(dedlist_ptr, ind) )
         {
             // occupied node
             fprintf(dot_file,   "NODE_%lld->NODE_%td[color=\"" COLOR_EDGE_PREV "\", penwidth=2];\n"
@@ -527,6 +527,13 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
     DL_WRP_PRINT( generate_dump_img_( ) );
 
     DL_WRP_PRINT( show_dump_img_( ) );
+}
+
+int is_node_free_( Dedlist *dedlist_ptr, size_t anchor )
+{
+    assert( dedlist_ptr );
+
+    return ( dedlist_ptr->nodes[anchor].prev == -1 );
 }
 
 void dedlist_print_verify_res_(FILE *stream, int verify_res)

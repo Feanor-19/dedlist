@@ -209,6 +209,8 @@ void init_free_elem_( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind );
 
 void init_new_free_elems_( Dedlist *dedlist_ptr, ptrdiff_t start_with );
 
+int is_node_free_( Dedlist *dedlist_ptr, size_t anchor );
+
 void dedlist_print_verify_res_(FILE *stream, int verify_res);
 
 size_t dedlist_get_head_ind( Dedlist *dedlist_ptr );
