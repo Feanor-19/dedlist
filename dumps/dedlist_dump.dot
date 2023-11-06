@@ -1,20 +1,46 @@
 digraph{
 rankdir=LR;
-bgcolor="#2D4059";
+bgcolor="#2D4059";splines=ortho
+
+
+NODE_TEXT->NODE_0[weight=10, color="#2D4059"];
+NODE_0->NODE_1[weight=10, color="#2D4059"];
+NODE_1->NODE_2[weight=10, color="#2D4059"];
+NODE_2->NODE_3[weight=10, color="#2D4059"];
+NODE_3->NODE_4[weight=10, color="#2D4059"];
+NODE_4->NODE_5[weight=10, color="#2D4059"];
+{ rank=same; HEAD; NODE_4; }
+{ rank=same; TAIL; NODE_5; }
+{ rank=same; FREE; NODE_2; }
+
+
+NODE_0:<p>->NODE_5[color="#F07B3F", penwidth=2];
+NODE_0:<n>->NODE_4[color="#FFD460", penwidth=2];
+
+NODE_1:<n>->NODE_0[color="#8ccb5e", penwidth=2];
+NODE_2:<n>->NODE_1[color="#8ccb5e", penwidth=2];
+NODE_3:<p>->NODE_4[color="#F07B3F", penwidth=2];
+NODE_3:<n>->NODE_5[color="#FFD460", penwidth=2];
+
+NODE_4:<p>->NODE_0[color="#F07B3F", penwidth=2];
+NODE_4:<n>->NODE_3[color="#FFD460", penwidth=2];
+
+NODE_5:<p>->NODE_3[color="#F07B3F", penwidth=2];
+NODE_5:<n>->NODE_0[color="#FFD460", penwidth=2];
 
 
 
 NODE_TEXT[shape=note, fontname="verdana",
 style=bold, style=filled,
 color="#EA5455", fillcolor="#ECC237",
-label = "Dedlist[000000a3a73ff650] (&dedlist) declared in src/main.cpp(12), in function main.\nDEDLIST_DUMP() called from src/main.cpp(22), from function main.\ncapacity: 6; free: 3; nodes: [000001f13db91440].Dedlist verification result: <0>
+label = "Dedlist[0000000e469ff9d0] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(24), from function main.\ncapacity: 6; free: 2; nodes: [0000019afc3f1440].Dedlist verification result: <0>
 "]
 
 
 NODE_0[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#EA5455",
-label = "{ <i>ind: 0 }|{ data:\nNULL} | {<p>prev:\n4 |<n>next:\n5}"];
+color="#EA5455", fillcolor="#ECC237",
+label = "{ <i>ind: 0 }|{ data:\nFICTIONAL} | {<p>prev:\n5 |<n>next:\n4}"];
 
 
 NODE_1[shape="record", fontname="verdana",
@@ -29,21 +55,18 @@ label = "{ <i>ind: 2 }|{ data:\nfree} | {<p>prev:\n-1 |<n>next:\n1}"];
 
 NODE_3[shape="record", fontname="verdana",
 style=bold, style=filled,
-color="#ECC237", fillcolor="#8ccb5e",
-label = "{ <i>ind: 3 }|{ data:\nfree} | {<p>prev:\n-1 |<n>next:\n2}"];
+color="#ECC237", fillcolor="#EA5455",
+label = "{ <i>ind: 3 }|{ data:\n*[0000019afc3f1488]=\n42} | {<p>prev:\n4 |<n>next:\n5}"];
 
 NODE_4[shape="record", fontname="verdana",
 style=bold, style=filled,
 color="#ECC237", fillcolor="#EA5455",
-label = "{ <i>ind: 4 }|{ data:\n*[000001f13db914a0]=\n23} | {<p>prev:\n5 |<n>next:\n0}"];
+label = "{ <i>ind: 4 }|{ data:\n*[0000019afc3f14a0]=\n23} | {<p>prev:\n0 |<n>next:\n3}"];
 
 NODE_5[shape="record", fontname="verdana",
 style=bold, style=filled,
 color="#ECC237", fillcolor="#EA5455",
-label = "{ <i>ind: 5 }|{ data:\n*[000001f13db914b8]=\n19} | {<p>prev:\n0 |<n>next:\n4}"];
-
-FICTIONAL[shape=tripleoctagon, style=filled,
-fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
+label = "{ <i>ind: 5 }|{ data:\n*[0000019afc3f14b8]=\n19} | {<p>prev:\n3 |<n>next:\n0}"];
 
 HEAD[shape=tripleoctagon, style=filled,
 fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
@@ -53,30 +76,6 @@ fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
 
 FREE[shape=tripleoctagon, style=filled,
 fontname="verdana", color="#EA5455", fillcolor="#ECC237"];
-
-
-NODE_0->NODE_1[weight=10, color="#2D4059"];
-NODE_1->NODE_2[weight=10, color="#2D4059"];
-NODE_2->NODE_3[weight=10, color="#2D4059"];
-NODE_3->NODE_4[weight=10, color="#2D4059"];
-NODE_4->NODE_5[weight=10, color="#2D4059"];
-{ rank=same; FICTIONAL; NODE_0; }
-{ rank=same; HEAD; NODE_5; }
-{ rank=same; TAIL; NODE_4; }
-{ rank=same; FREE; NODE_3; }
-
-
-NODE_0:<p>->NODE_4[color="#F07B3F", penwidth=2];
-NODE_0:<n>->NODE_5[color="#FFD460", penwidth=2];
-
-NODE_1:<n>->NODE_0[color="#8ccb5e", penwidth=2];
-NODE_2:<n>->NODE_1[color="#8ccb5e", penwidth=2];
-NODE_3:<n>->NODE_2[color="#8ccb5e", penwidth=2];
-NODE_4:<p>->NODE_5[color="#F07B3F", penwidth=2];
-NODE_4:<n>->NODE_0[color="#FFD460", penwidth=2];
-
-NODE_5:<p>->NODE_0[color="#F07B3F", penwidth=2];
-NODE_5:<n>->NODE_4[color="#FFD460", penwidth=2];
 
 
 }

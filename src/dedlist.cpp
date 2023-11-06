@@ -50,7 +50,7 @@ DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
                                         Elem_t value,
                                         size_t* inserted_elem_anchor_ptr )
 {
-    return dedlist_insert( dedlist_ptr, dedlist_get_head_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
+    return dedlist_insert( dedlist_ptr, 0, value, inserted_elem_anchor_ptr );
 }
 
 DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
@@ -60,6 +60,21 @@ DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
     return dedlist_insert( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
 }
 
+
+
+size_t dedlist_get_head_ind( Dedlist *dedlist_ptr )
+{
+    assert(dedlist_ptr);
+
+    return (size_t) dedlist_ptr->nodes[0].next;
+}
+
+size_t dedlist_get_tail_ind( Dedlist *dedlist_ptr )
+{
+    assert(dedlist_ptr);
+
+    return (size_t) dedlist_ptr->nodes[0].prev;
+}
 
 void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream)
 {
@@ -238,7 +253,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //---------------------------------------------------------------------
     fprintf(dot_file,   "digraph{\n"
                         "rankdir=LR;\n"
-                        "bgcolor=\"" COLOR_BG "\";\n"
+                        "bgcolor=\"" COLOR_BG "\";splines=ortho\n"
                         "\n\n\n");
     //---------------------------------------------------------------------
 
@@ -270,9 +285,9 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //------------------------------NODE_0---------------------------------
     fprintf(dot_file,   "NODE_0[shape=\"record\", fontname=\"verdana\",\n"
                         "style=bold, style=filled,\n"
-                        "color=\"" COLOR_OCCUP_NODE_COLOR "\", fillcolor=\"" COLOR_OCCUP_NODE_FILL "\",\n"
+                        "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"
                         "label = \""
-                        "{ <i>ind: 0 }|{ data:\\nNULL} | {<p>prev:\\n%td |<n>next:\\n%td}"
+                        "{ <i>ind: 0 }|{ data:\\nFICTIONAL} | {<p>prev:\\n%td |<n>next:\\n%td}"
                         "\"];\n\n\n",
                         dedlist_ptr->nodes[0].prev,
                         dedlist_ptr->nodes[0].next);
@@ -318,8 +333,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
 
     //-------------------------------SPECIAL_LABELS------------------------
-    fprintf(dot_file,   "FICTIONAL[shape=tripleoctagon, style=filled,\n"
-                        "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"
+    fprintf(dot_file,   /*"FICTIONAL[shape=tripleoctagon, style=filled,\n"
+                        "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"*/
                         "HEAD[shape=tripleoctagon, style=filled,\n"
                         "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"
                         "TAIL[shape=tripleoctagon, style=filled,\n"
@@ -330,6 +345,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
 
     //-----------------------------------NODES_SEWING----------------------
+    fprintf(dot_file,   "NODE_TEXT->NODE_0[weight=10, color=\"" COLOR_BG "\"];\n");
     for (size_t ind = 0; ind < dedlist_ptr->capacity - 1; ind++)
     {
         fprintf(dot_file,   "NODE_%lld->NODE_%lld[weight=10, color=\"" COLOR_BG "\"];\n",
@@ -339,7 +355,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
 
     //----------------------------SPECIAL_LABELS_RANKS---------------------
-    fprintf(dot_file,   "{ rank=same; FICTIONAL; NODE_0; }\n"
+    fprintf(dot_file,   /*"{ rank=same; FICTIONAL; NODE_0; }\n"*/
                         "{ rank=same; HEAD; NODE_%td; }\n"
                         "{ rank=same; TAIL; NODE_%td; }\n"
                         "{ rank=same; FREE; NODE_%td; }\n\n\n",
@@ -468,17 +484,3 @@ void dedlist_print_verify_res_(FILE *stream, int verify_res)
 }
 
 #endif //DEDLIST_DO_DUMP
-
-size_t dedlist_get_head_ind( Dedlist *dedlist_ptr )
-{
-    assert(dedlist_ptr);
-
-    return (size_t) dedlist_ptr->nodes[0].next;
-}
-
-size_t dedlist_get_tail_ind( Dedlist *dedlist_ptr )
-{
-    assert(dedlist_ptr);
-
-    return (size_t) dedlist_ptr->nodes[0].prev;
-}
