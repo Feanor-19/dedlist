@@ -27,6 +27,18 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
     if ( !is_anchor_valid_for_insert( dedlist_ptr, anchor ) )
         return DEDLIST_STATUS_ERROR_INVALID_ANCHOR_FOR_INSERT;
 
+    if (dedlist_ptr->free == 0)
+    {
+        //DL_WRP( dedlist_realloc_up_(dedlist_ptr) );
+
+        {
+            DedlistStatusCode code = dedlist_realloc_up_(dedlist_ptr);
+            if (code != DEDLIST_STATUS_OK)
+                return code;
+        };
+
+    }
+
     ptrdiff_t new_elem_ind = dedlist_ptr->free;
 
     dedlist_ptr->free = dedlist_ptr->nodes[new_elem_ind].next;
@@ -60,18 +72,16 @@ DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
     return dedlist_insert( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), value, inserted_elem_anchor_ptr );
 }
 
-
-
 size_t dedlist_get_head_ind( Dedlist *dedlist_ptr )
 {
-    assert(dedlist_ptr);
+    DEDLIST_SELFCHECK(dedlist_ptr);
 
     return (size_t) dedlist_ptr->nodes[0].next;
 }
 
 size_t dedlist_get_tail_ind( Dedlist *dedlist_ptr )
 {
-    assert(dedlist_ptr);
+    DEDLIST_SELFCHECK(dedlist_ptr);
 
     return (size_t) dedlist_ptr->nodes[0].prev;
 }
@@ -90,7 +100,7 @@ void inline init_zeroth_elem_( Dedlist *dedlist_ptr )
     dedlist_ptr->nodes[0].prev = 0;
 }
 
-void inline init_free_elem( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
+void inline init_free_elem_( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
 {
     assert(dedlist_ptr);
 
@@ -107,7 +117,7 @@ void inline init_new_free_elems_( Dedlist *dedlist_ptr, ptrdiff_t start_with )
 
     for ( ptrdiff_t ind = start_with; ind < (ptrdiff_t) dedlist_ptr->capacity; ind++ )
     {
-        init_free_elem(dedlist_ptr, ind);
+        init_free_elem_(dedlist_ptr, ind);
     }
 }
 
@@ -139,6 +149,27 @@ DedlistStatusCode dedlist_ctor_( Dedlist *dedlist_ptr, size_t default_size
     return DEDLIST_STATUS_OK;
 }
 
+DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr )
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+
+    const size_t MEM_MULTIPLIER = 2;
+
+    size_t old_capacity = dedlist_ptr->capacity;
+    DedlistNode *new_mem = (DedlistNode*) realloc( dedlist_ptr->nodes, MEM_MULTIPLIER*old_capacity*sizeof(DedlistNode));
+    if (!new_mem)
+        return DEDLIST_STATUS_ERROR_MEM_ALLOC;
+
+    dedlist_ptr->nodes = new_mem;
+
+    dedlist_ptr->capacity = MEM_MULTIPLIER * old_capacity;
+
+    init_new_free_elems_(dedlist_ptr, old_capacity);
+
+    return DEDLIST_STATUS_OK;
+}
+
+
 DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 {
     if (dedlist_ptr->nodes)
@@ -160,7 +191,7 @@ DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 
 inline int verify_check_occupied_elems( Dedlist *dedlist_ptr )
 {
-    ptrdiff_t curr_ind = dedlist_get_head_ind( dedlist_ptr );
+    ptrdiff_t curr_ind = dedlist_ptr->nodes[0].next;
     size_t iterations = 0;
     while ( curr_ind != 0 )
     {
@@ -219,8 +250,11 @@ dl_verify_res_t dedlist_verify( Dedlist *dedlist_ptr )
 //! @brief Pointer to newly created file is stored in *ret_ptr
 inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_name, FILE **ret_ptr )
 {
+    assert(dot_file_name);
+    assert(ret_ptr);
+
     *ret_ptr = fopen( dot_file_name, "w" );
-    if ( !*ret_ptr )
+    if ( !(*ret_ptr) )
         return DEDLIST_STATUS_ERROR_CANT_OPEN_DUMP_FILE;
 
     return DEDLIST_STATUS_OK;
@@ -252,8 +286,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
     //---------------------------------------------------------------------
     fprintf(dot_file,   "digraph{\n"
-                        "rankdir=LR;\n"
-                        "bgcolor=\"" COLOR_BG "\";splines=ortho\n"
+                        "splines=ortho;\n"
+                        "bgcolor=\"" COLOR_BG "\";"
                         "\n\n\n");
     //---------------------------------------------------------------------
 
@@ -286,9 +320,10 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     fprintf(dot_file,   "NODE_0[shape=\"record\", fontname=\"verdana\",\n"
                         "style=bold, style=filled,\n"
                         "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"
-                        "label = \""
-                        "{ <i>ind: 0 }|{ data:\\nFICTIONAL} | {<p>prev:\\n%td |<n>next:\\n%td}"
-                        "\"];\n\n\n",
+                        "label = <<table cellspacing=\"0\">\n"
+                        "<tr><td colspan=\"2\">ind: 0</td></tr>\n"
+                        "<tr><td colspan=\"2\">data: FICTIONAL</td></tr>\n"
+                        "<tr><td>prev: %td</td><td>next: %td</td></tr></table>>];\n\n\n",
                         dedlist_ptr->nodes[0].prev,
                         dedlist_ptr->nodes[0].next);
     //---------------------------------------------------------------------
@@ -304,12 +339,12 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
             fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\n"
                                 "color=\"" COLOR_OCCUP_NODE_COLOR "\", fillcolor=\"" COLOR_OCCUP_NODE_FILL "\",\n"
-                                "label = \""
-                                "{ <i>ind: %llu }|{ data:\\n*[%p]=\\n%d} | {<p>prev:\\n%td |<n>next:\\n%td}"
-                                "\"];\n\n",
+                                "label = <<table cellspacing=\"0\">\n"
+                                "<tr><td colspan=\"2\">ind: %llu</td></tr>\n"
+                                "<tr><td colspan=\"2\">data: %d</td></tr>\n"
+                                "<tr><td>prev: %td</td><td>next: %td</td></tr></table>>];\n\n",
                                 ind,
                                 ind,
-                                dedlist_ptr->nodes + ind,
                                 *( (int*)(dedlist_ptr->nodes + ind) ),
                                 dedlist_ptr->nodes[ind].prev,
                                 dedlist_ptr->nodes[ind].next);
@@ -320,9 +355,10 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
             fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\n"
                                 "color=\"" COLOR_FREE_NODE_COLOR "\", fillcolor=\"" COLOR_FREE_NODE_FILL "\",\n"
-                                "label = \""
-                                "{ <i>ind: %llu }|{ data:\\nfree} | {<p>prev:\\n%td |<n>next:\\n%td}"
-                                "\"];\n\n",
+                                "label = <<table cellspacing=\"0\">\n"
+                                "<tr><td colspan=\"2\">ind: %llu</td></tr>\n"
+                                "<tr><td colspan=\"2\">data: free</td></tr>\n"
+                                "<tr><td>prev: %td</td><td>next: %td</td></tr></table>>];\n\n",
                                 ind,
                                 ind,
                                 dedlist_ptr->nodes[ind].prev,
@@ -333,9 +369,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
 
     //-------------------------------SPECIAL_LABELS------------------------
-    fprintf(dot_file,   /*"FICTIONAL[shape=tripleoctagon, style=filled,\n"
-                        "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"*/
-                        "HEAD[shape=tripleoctagon, style=filled,\n"
+    fprintf(dot_file,   "HEAD[shape=tripleoctagon, style=filled,\n"
                         "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"
                         "TAIL[shape=tripleoctagon, style=filled,\n"
                         "fontname=\"verdana\", color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\"];\n\n"
@@ -345,6 +379,13 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
 
 
     //-----------------------------------NODES_SEWING----------------------
+    fprintf(dot_file, "{rank=same; NODE_TEXT ");
+    for (size_t ind = 0; ind < dedlist_ptr->capacity; ind++)
+    {
+        fprintf(dot_file,   "NODE_%lld ", ind);
+    }
+    fprintf(dot_file,   "}\n");
+
     fprintf(dot_file,   "NODE_TEXT->NODE_0[weight=10, color=\"" COLOR_BG "\"];\n");
     for (size_t ind = 0; ind < dedlist_ptr->capacity - 1; ind++)
     {
@@ -354,11 +395,10 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //---------------------------------------------------------------------
 
 
-    //----------------------------SPECIAL_LABELS_RANKS---------------------
-    fprintf(dot_file,   /*"{ rank=same; FICTIONAL; NODE_0; }\n"*/
-                        "{ rank=same; HEAD; NODE_%td; }\n"
-                        "{ rank=same; TAIL; NODE_%td; }\n"
-                        "{ rank=same; FREE; NODE_%td; }\n\n\n",
+    //----------------------------SPECIAL_LABELS_EDGES---------------------
+    fprintf(dot_file,   "HEAD->NODE_%td[color=\"#ECC237\"];\n"
+                        "TAIL->NODE_%td[color=\"#ECC237\"];\n"
+                        "FREE->NODE_%td[color=\"#ECC237\"];\n\n\n",
                         dedlist_get_head_ind(dedlist_ptr),
                         dedlist_get_tail_ind(dedlist_ptr),
                         dedlist_ptr->free );
@@ -372,8 +412,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
         if ( dedlist_ptr->nodes[ind].prev != -1 )
         {
             // occupied node
-            fprintf(dot_file,   "NODE_%lld:<p>->NODE_%td[color=\"" COLOR_EDGE_PREV "\", penwidth=2];\n"
-                                "NODE_%lld:<n>->NODE_%td[color=\"" COLOR_EDGE_NEXT "\", penwidth=2];\n\n",
+            fprintf(dot_file,   "NODE_%lld->NODE_%td[color=\"" COLOR_EDGE_PREV "\", penwidth=2];\n"
+                                "NODE_%lld->NODE_%td[color=\"" COLOR_EDGE_NEXT "\", penwidth=2];\n\n",
                                 ind,
                                 dedlist_ptr->nodes[ind].prev,
                                 ind,
@@ -382,7 +422,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
         else
         {
             // free node
-            fprintf(dot_file,   "NODE_%lld:<n>->NODE_%lld[color=\"" COLOR_EDGE_FREE "\", penwidth=2];\n",
+            fprintf(dot_file,   "NODE_%lld->NODE_%lld[color=\"" COLOR_EDGE_FREE "\", penwidth=2];\n",
                                 ind,
                                 dedlist_ptr->nodes[ind].next);
         }

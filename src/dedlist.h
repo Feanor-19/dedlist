@@ -161,6 +161,14 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
 #endif // DEDLIST_DO_DUMP
 
+//! @brief call dedlist_func, returning DedlistStatusCode, and if
+// returned code isn't OK, immediately returns it.
+#define DL_WRP(dedlist_func) {                              \
+    DedlistStatusCode code = dedlist_func;                  \
+    if (code != DEDLIST_STATUS_OK)                          \
+        return code;                                        \
+}
+
 //! @brief Inserts value after element located at anchor.
 //! Puts inserted element's anchor by the given pointer.
 DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
@@ -175,6 +183,8 @@ DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
 DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
                                         Elem_t value,
                                         size_t* inserted_elem_anchor_ptr );
+
+DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr );
 
 void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream);
 
