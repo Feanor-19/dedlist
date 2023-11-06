@@ -29,14 +29,7 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 
     if (dedlist_ptr->free == 0)
     {
-        //DL_WRP( dedlist_realloc_up_(dedlist_ptr) );
-
-        {
-            DedlistStatusCode code = dedlist_realloc_up_(dedlist_ptr);
-            if (code != DEDLIST_STATUS_OK)
-                return code;
-        };
-
+        DL_WRP( dedlist_realloc_up_(dedlist_ptr) );
     }
 
     ptrdiff_t new_elem_ind = dedlist_ptr->free;
@@ -54,6 +47,22 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
     dedlist_ptr->nodes[new_elem_ind].prev = anchor;
 
     *inserted_elem_anchor_ptr = (size_t) new_elem_ind;
+
+    return DEDLIST_STATUS_OK;
+}
+
+DedlistStatusCode dedlist_delete(   Dedlist *dedlist_ptr,
+                                    size_t anchor )
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+
+    ptrdiff_t saved_prev = dedlist_ptr->nodes[anchor].prev;
+    ptrdiff_t saved_next = dedlist_ptr->nodes[anchor].next;
+
+    init_free_elem_(dedlist_ptr, anchor);
+
+    dedlist_ptr->nodes[saved_prev].next = saved_next;
+    dedlist_ptr->nodes[saved_next].prev = saved_prev;
 
     return DEDLIST_STATUS_OK;
 }
@@ -91,7 +100,7 @@ void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream)
     fprintf(stream, "%s", dedlist_status_code_messages[code]);
 }
 
-void inline init_zeroth_elem_( Dedlist *dedlist_ptr )
+void init_zeroth_elem_( Dedlist *dedlist_ptr )
 {
     assert(dedlist_ptr);
 
@@ -100,7 +109,7 @@ void inline init_zeroth_elem_( Dedlist *dedlist_ptr )
     dedlist_ptr->nodes[0].prev = 0;
 }
 
-void inline init_free_elem_( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
+void init_free_elem_( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
 {
     assert(dedlist_ptr);
 
@@ -111,7 +120,7 @@ void inline init_free_elem_( Dedlist *dedlist_ptr, ptrdiff_t free_elem_ind )
     dedlist_ptr->free = free_elem_ind;
 }
 
-void inline init_new_free_elems_( Dedlist *dedlist_ptr, ptrdiff_t start_with )
+void init_new_free_elems_( Dedlist *dedlist_ptr, ptrdiff_t start_with )
 {
     assert( dedlist_ptr );
 
@@ -386,19 +395,19 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     }
     fprintf(dot_file,   "}\n");
 
-    fprintf(dot_file,   "NODE_TEXT->NODE_0[weight=10, color=\"" COLOR_BG "\"];\n");
+    fprintf(dot_file,   "NODE_TEXT->NODE_0[weight=10, style=invis];\n");
     for (size_t ind = 0; ind < dedlist_ptr->capacity - 1; ind++)
     {
-        fprintf(dot_file,   "NODE_%lld->NODE_%lld[weight=10, color=\"" COLOR_BG "\"];\n",
+        fprintf(dot_file,   "NODE_%lld->NODE_%lld[weight=10, style=invis];\n",
                             ind, ind+1);
     }
     //---------------------------------------------------------------------
 
 
     //----------------------------SPECIAL_LABELS_EDGES---------------------
-    fprintf(dot_file,   "HEAD->NODE_%td[color=\"#ECC237\"];\n"
-                        "TAIL->NODE_%td[color=\"#ECC237\"];\n"
-                        "FREE->NODE_%td[color=\"#ECC237\"];\n\n\n",
+    fprintf(dot_file,   "HEAD->NODE_%td[style=invis];\n"
+                        "TAIL->NODE_%td[style=invis];\n"
+                        "FREE->NODE_%td[style=invis];\n\n\n",
                         dedlist_get_head_ind(dedlist_ptr),
                         dedlist_get_tail_ind(dedlist_ptr),
                         dedlist_ptr->free );

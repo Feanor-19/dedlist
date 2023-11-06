@@ -21,6 +21,12 @@ int main()
     dedlist_insert(&dedlist, x_anchor_2, 42, &x_anchor_3);
     printf("x_anchor_3 : <%lld>\n", x_anchor_3);
 
+    size_t x_anchor_4 = -1;
+    dedlist_push_head(&dedlist, 17, &x_anchor_4);
+    printf("x_anchor_4 : <%lld>\n", x_anchor_4);
+
+    dedlist_delete(&dedlist, x_anchor_3);
+
     DEDLIST_DUMP(&dedlist, 0);
 
     dedlist_dtor(&dedlist);
