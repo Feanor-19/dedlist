@@ -375,7 +375,6 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                         "style=bold, style=filled,\n"
                         "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"
                         "label = \"");
-    // TODO - добавить время дампа?
     fprintf(dot_file,   "Dedlist[%p] (%s) declared in %s(%d), in function %s.\\n"
                         "DEDLIST_DUMP() called from %s(%d), from function %s.\\n"
                         "capacity: %lld; free: %lld; nodes: [%p].",
@@ -549,18 +548,19 @@ inline DedlistStatusCode generate_dump_img_( const char * dump_dot_path, const c
     return DEDLIST_STATUS_OK;
 }
 
+#ifdef DEDLIST_SHOW_DUMP_IMG
 inline DedlistStatusCode show_dump_img_( const char * dump_img_path )
 {
     system(dump_img_path);
 
     return DEDLIST_STATUS_OK;
 }
+#endif
 
 inline DedlistStatusCode free_dot_file_( FILE * dot_tmp_file )
 {
     fclose(dot_tmp_file);
 
-    // TODO - удаление временного файла (или добавление подписи со временем)
     return DEDLIST_STATUS_OK;
 }
 
@@ -592,7 +592,13 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
     DL_WRP_PRINT( generate_dump_img_( dot_file_path, img_file_path ) );
 
+#ifdef DEDLIST_SHOW_DUMP_IMG
     DL_WRP_PRINT( show_dump_img_( img_file_path ) );
+#endif
+
+#ifdef DEDLIST_ABORT_ON_DUMP
+    abort();
+#endif
 }
 
 int is_node_free_( Dedlist *dedlist_ptr, size_t anchor )

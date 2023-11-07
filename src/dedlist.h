@@ -12,6 +12,7 @@
     DEDLIST_SHOW_DUMP_IMG - requires DEDLIST_DO_DUMP
 */
 #define DEDLIST_DO_DUMP
+#define DEDLIST_SHOW_DUMP_IMG
 
 typedef int Elem_t;
 const Elem_t ELEM_T_DEFAULT_VALUE = 0;
