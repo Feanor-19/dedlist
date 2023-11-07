@@ -1,5 +1,8 @@
 #include <assert.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "dedlist.h"
 
@@ -270,13 +273,64 @@ dl_verify_res_t dedlist_verify( Dedlist *dedlist_ptr )
 }
 #undef DEF_VERIFY_FLAG
 
-//! @brief Pointer to newly created file is stored in *ret_ptr
-inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_name, FILE **ret_ptr )
+inline void get_as_str_curr_local_time_(char *stream)
 {
-    assert(dot_file_name);
+    time_t curr_time = time(NULL);
+    tm curr_local_time = *localtime(&curr_time);
+
+    sprintf(stream, "%d-%02d-%02d_%02d-%02d-%02d",  curr_local_time.tm_year + 1900,
+                                                    curr_local_time.tm_mon + 1,
+                                                    curr_local_time.tm_mday,
+                                                    curr_local_time.tm_hour,
+                                                    curr_local_time.tm_min,
+                                                    curr_local_time.tm_sec);
+}
+
+inline DedlistStatusCode create_dump_folder_( char **curr_dump_dir_ptr )
+{
+    assert(curr_dump_dir_ptr);
+
+    char *dir_name = (char*) calloc(DEDLIST_MAX_PATH_LENGHT, sizeof(char));
+    strncpy(dir_name, DEDLIST_DUMP_PATH, DEDLIST_MAX_PATH_LENGHT);
+    char *dir_name_curr_ptr = dir_name + strlen(DEDLIST_DUMP_PATH);
+
+    char curr_time[DEDLIST_MAX_PATH_LENGHT] = "";
+    get_as_str_curr_local_time_(curr_time);
+
+    strcat(dir_name_curr_ptr, curr_time);
+    dir_name_curr_ptr += strlen(curr_time);
+
+    strcat(dir_name_curr_ptr, "\\");
+    dir_name_curr_ptr += strlen("\\");
+
+    struct stat st = {};
+
+    if (stat(DEDLIST_DUMP_PATH, &st) == -1) {
+        int res = mkdir(DEDLIST_DUMP_PATH);
+
+        if (res != 0)
+            return DEDLIST_STATUS_ERROR_CANT_CREATE_DUMP_DIR;
+    }
+
+    if (stat(dir_name, &st) == -1) {
+        int res = mkdir(dir_name);
+
+        if (res != 0)
+            return DEDLIST_STATUS_ERROR_CANT_CREATE_DUMP_DIR;
+    }
+
+    *curr_dump_dir_ptr = dir_name;
+
+    return DEDLIST_STATUS_OK;
+}
+
+//! @brief Pointer to newly created file is stored in *ret_ptr
+inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_path, FILE **ret_ptr )
+{
+    assert(dot_file_path);
     assert(ret_ptr);
 
-    *ret_ptr = fopen( dot_file_name, "w" );
+    *ret_ptr = fopen( dot_file_path, "w" );
     if ( !(*ret_ptr) )
         return DEDLIST_STATUS_ERROR_CANT_OPEN_DUMP_FILE;
 
@@ -284,6 +338,8 @@ inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_name, FILE *
 }
 
 // TODO - в другой файл? что делать с такой большой функцией?
+// если в другой файл, тогда dedlist будет уже из более чем двух файлов,
+// а это неудобно подключать... можно попробовать разобраться с библиотеками
 inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                                                     Dedlist *dedlist_ptr,
                                                     dl_verify_res_t verify_res,
@@ -470,16 +526,16 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     return DEDLIST_STATUS_OK;
 }
 
-inline DedlistStatusCode generate_dump_img_( )
+inline DedlistStatusCode generate_dump_img_( const char * dump_dot_path, const char * dump_img_path )
 {
-    char cmd[MAX_CMD_GEN_DUMP_IMG_LENGHT] = {};
+    char cmd[DEDLIST_MAX_CMD_GEN_DUMP_IMG_LENGHT] = {};
     int written_chars = snprintf(   cmd,
-                                    MAX_CMD_GEN_DUMP_IMG_LENGHT,
+                                    DEDLIST_MAX_CMD_GEN_DUMP_IMG_LENGHT,
                                     "dot %s -Tjpg -o %s",
-                                    DUMP_DOT_FILE_PATH,
-                                    DUMP_IMG_FILE_PATH);
+                                    dump_dot_path,
+                                    dump_img_path);
 
-    if ( written_chars >= (int) MAX_CMD_GEN_DUMP_IMG_LENGHT)
+    if ( written_chars >= (int) DEDLIST_MAX_CMD_GEN_DUMP_IMG_LENGHT)
     {
         fprintf(stderr, "Command to generate dump image is too long, can't execute it. "
         "Please, make paths to files shorter.\n");
@@ -493,9 +549,9 @@ inline DedlistStatusCode generate_dump_img_( )
     return DEDLIST_STATUS_OK;
 }
 
-inline DedlistStatusCode show_dump_img_( )
+inline DedlistStatusCode show_dump_img_( const char * dump_img_path )
 {
-    system(DUMP_IMG_FILE_PATH);
+    system(dump_img_path);
 
     return DEDLIST_STATUS_OK;
 }
@@ -517,15 +573,26 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
     FILE *dot_file = NULL;
 
-    DL_WRP_PRINT( create_tmp_dot_file_( DUMP_DOT_FILE_PATH, &dot_file ) );
+    char *curr_dump_dir = NULL;
+    DL_WRP_PRINT( create_dump_folder_(&curr_dump_dir) );
+
+    char dot_file_path[DEDLIST_MAX_PATH_LENGHT] = "";
+    strcpy(dot_file_path, curr_dump_dir);
+    strcat(dot_file_path, "dmp.dot");
+
+    DL_WRP_PRINT( create_tmp_dot_file_( dot_file_path, &dot_file ) );
 
     DL_WRP_PRINT( write_dot_file_for_dump_(dot_file, dedlist_ptr, verify_res, file, line, func ) );
 
     DL_WRP_PRINT( free_dot_file_(dot_file) );
 
-    DL_WRP_PRINT( generate_dump_img_( ) );
+    char img_file_path[DEDLIST_MAX_PATH_LENGHT] = "";
+    strcpy(img_file_path, curr_dump_dir);
+    strcat(img_file_path, "dmp.jpg");
 
-    DL_WRP_PRINT( show_dump_img_( ) );
+    DL_WRP_PRINT( generate_dump_img_( dot_file_path, img_file_path ) );
+
+    DL_WRP_PRINT( show_dump_img_( img_file_path ) );
 }
 
 int is_node_free_( Dedlist *dedlist_ptr, size_t anchor )

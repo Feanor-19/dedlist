@@ -6,7 +6,7 @@ bgcolor="#2D4059";
 NODE_TEXT[shape=note, fontname="verdana",
 style=bold, style=filled,
 color="#EA5455", fillcolor="#ECC237",
-label = "Dedlist[0000003399fff670] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(32), from function main.\ncapacity: 6; free: 2; nodes: [000001e721991440].Dedlist verification result: <0>
+label = "Dedlist[000000956b3ffd50] (&dedlist) declared in src/main.cpp(10), in function main.\nDEDLIST_DUMP() called from src/main.cpp(32), from function main.\ncapacity: 6; free: 2; nodes: [0000020a12a815b0].Dedlist verification result: <0>
 "]
 
 

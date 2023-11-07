@@ -8,6 +8,8 @@
     AVAILABLE DEFINES:
 
     DEDLIST_DO_DUMP
+    DEDLIST_ABORT_ON_DUMP - requires DEDLIST_DO_DUMP
+    DEDLIST_SHOW_DUMP_IMG - requires DEDLIST_DO_DUMP
 */
 #define DEDLIST_DO_DUMP
 
@@ -89,13 +91,12 @@ const char* const dedlist_verification_messages[] =
 #endif // DEDLIST_DO_DUMP
 
 #ifdef DEDLIST_DO_DUMP
-//! @note includes path to the file
-const char* const DUMP_DOT_FILE_PATH = ".\\dumps\\dedlist_dump.dot";
+//! @brief Dump files will be stored in folder, specified by this path.
+const char* const DEDLIST_DUMP_PATH = ".\\dumps\\";
 
-//! @note includes path to the file
-const char* const DUMP_IMG_FILE_PATH = ".\\dumps\\dedlist_dump.jpg";
+const size_t DEDLIST_MAX_PATH_LENGHT = 1024;
 
-const size_t MAX_CMD_GEN_DUMP_IMG_LENGHT = 256;
+const size_t DEDLIST_MAX_CMD_GEN_DUMP_IMG_LENGHT = 1024;
 #endif // DEDLIST_DO_DUMP
 
 //------------------------------------------------------------------------------------------------------
