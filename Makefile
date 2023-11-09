@@ -13,6 +13,7 @@ CFLAGS = 	-Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef 				\
 SOURCES 	= $(wildcard ./src/*.cpp)
 OBJFILES 	= $(SOURCES:.cpp=.o)
 OUT 		= main.exe
+DUMP_FOLDER = .\dumps
 
 $(OUT) : $(OBJFILES)
 	@$(CC) -o $@ $(CFLAGS) $^
@@ -23,3 +24,6 @@ $(OUT) : $(OBJFILES)
 .PHONY: clean
 clean:
 	rm -f $(OBJFILES) $(OUT)
+
+clean_dumps:
+	rm -r -f $(DUMP_FOLDER)

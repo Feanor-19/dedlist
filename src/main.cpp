@@ -9,25 +9,10 @@ int main()
 
     dedlist_ctor(&dedlist, 2);
 
-    size_t x_anchor_1 = -1;
-    dedlist_push_head(&dedlist, 19, &x_anchor_1);
-    printf("x_anchor_1 : <%lld>\n", x_anchor_1);
-
-    size_t x_anchor_2 = -1;
-    dedlist_push_head(&dedlist, 23, &x_anchor_2);
-    printf("x_anchor_2 : <%lld>\n", x_anchor_2);
-
-    size_t x_anchor_3 = -1;
-    dedlist_insert(&dedlist, x_anchor_2, 42, &x_anchor_3);
-    printf("x_anchor_3 : <%lld>\n", x_anchor_3);
-
-    size_t x_anchor_4 = -1;
-    dedlist_push_head(&dedlist, 17, &x_anchor_4);
-    printf("x_anchor_4 : <%lld>\n", x_anchor_4);
-
-    dedlist_delete_head(&dedlist);
-
-    dedlist_delete_tail(&dedlist);
+    for (int x = 1; x <= 19; x++)
+    {
+        dedlist_push_tail( &dedlist, x );
+    }
 
     DEDLIST_DUMP(&dedlist, 0);
 

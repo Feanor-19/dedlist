@@ -25,7 +25,6 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
                                     size_t* inserted_elem_anchor_ptr)
 {
     DEDLIST_SELFCHECK(dedlist_ptr);
-    assert(inserted_elem_anchor_ptr);
 
     if ( !is_anchor_valid_for_insert( dedlist_ptr, anchor ) )
         return DEDLIST_STATUS_ERROR_INVALID_ANCHOR_FOR_INSERT;
@@ -49,7 +48,8 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 
     dedlist_ptr->nodes[new_elem_ind].prev = anchor;
 
-    *inserted_elem_anchor_ptr = (size_t) new_elem_ind;
+    if (inserted_elem_anchor_ptr != NULL)
+        *inserted_elem_anchor_ptr = (size_t) new_elem_ind;
 
     return DEDLIST_STATUS_OK;
 }
@@ -595,6 +595,8 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 #ifdef DEDLIST_SHOW_DUMP_IMG
     DL_WRP_PRINT( show_dump_img_( img_file_path ) );
 #endif
+
+    free(curr_dump_dir);
 
 #ifdef DEDLIST_ABORT_ON_DUMP
     abort();
