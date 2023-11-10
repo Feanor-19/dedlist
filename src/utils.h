@@ -9,6 +9,7 @@
 //! @return Index of the char right after inserted string
 //! (be careful, it might be index of the terminating symbol)
 size_t str_insert(  char *str_dest_begin,
+                    size_t str_dest_capacity,
                     const char *str_source,
                     size_t start_ind,
                     int *res );

@@ -2,17 +2,10 @@
 #include <stdlib.h>
 
 #include "dedlist.h"
-#include "utils.h"
 
 int main()
 {
-    char str1[20] = "hello world";
-    const char *str2 = "fip";
-    int res = -1;
-    size_t ind = str_insert(str1, str2, 10, &res);
-    printf("%d, %lld, <%s>\n", res, ind, str1);
 
-    /*
     Dedlist dedlist = {};
 
     dedlist_ctor(&dedlist, 2);
@@ -36,7 +29,6 @@ int main()
     DEDLIST_DUMP(&dedlist, 0);
 
     dedlist_dtor(&dedlist);
-    */
 
     return 0;
 }
