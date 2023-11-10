@@ -52,6 +52,7 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 
     if (inserted_elem_anchor_ptr != NULL)
         *inserted_elem_anchor_ptr = (size_t) new_elem_ind;
+    dedlist_ptr->size++;
 
     return DEDLIST_STATUS_OK;
 }
@@ -68,6 +69,8 @@ DedlistStatusCode dedlist_delete(   Dedlist *dedlist_ptr,
 
     dedlist_ptr->nodes[saved_prev].next = saved_next;
     dedlist_ptr->nodes[saved_next].prev = saved_prev;
+
+    dedlist_ptr->size--;
 
     return DEDLIST_STATUS_OK;
 }
@@ -190,6 +193,7 @@ DedlistStatusCode dedlist_ctor_( Dedlist *dedlist_ptr, size_t default_size
     init_zeroth_elem_( dedlist_ptr );
 
     dedlist_ptr->free = 0; // изменится после иницииализации новых пустых элементов
+    dedlist_ptr->size = 0;
 
     init_new_free_elems_(dedlist_ptr, 1);
 
@@ -220,6 +224,10 @@ DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr )
     return DEDLIST_STATUS_OK;
 }
 
+DedlistStatusCode dedlist_shrink_to_fit_and_loose_anchors( Dedlist *dedlist_ptr )
+{
+
+}
 
 DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 {
@@ -230,6 +238,7 @@ DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 
     dedlist_ptr->capacity = 0;
     dedlist_ptr->free = 0;
+    dedlist_ptr->size = 0;
 
 #ifdef DEDLIST_DO_DUMP
     dedlist_ptr->orig_info = {};

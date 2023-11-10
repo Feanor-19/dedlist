@@ -64,6 +64,7 @@ struct Dedlist
 {
     DedlistNode *nodes = NULL;
     size_t capacity = 0;
+    size_t size = 0;
     ptrdiff_t free = 0;
 
 #ifdef DEDLIST_DO_DUMP
@@ -207,6 +208,8 @@ DedlistStatusCode dedlist_delete_head( Dedlist *dedlist_ptr );
 DedlistStatusCode dedlist_delete_tail( Dedlist *dedlist_ptr );
 
 DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr );
+
+DedlistStatusCode dedlist_shrink_to_fit_and_loose_anchors( Dedlist *dedlist_ptr );
 
 void dedlist_print_status_code_message( DedlistStatusCode code, FILE *stream);
 
