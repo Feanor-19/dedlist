@@ -186,8 +186,13 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
                                     Elem_t value,
                                     size_t* inserted_elem_anchor_ptr = NULL);
 
-DedlistStatusCode dedlist_delete(   Dedlist *dedlist_ptr,
-                                    size_t anchor );
+DedlistStatusCode dedlist_delete( Dedlist *dedlist_ptr, size_t anchor );
+
+DedlistStatusCode dedlist_get_by_anchor( Dedlist *dedlist_ptr, size_t anchor, Elem_t *ret);
+
+DedlistStatusCode dedlist_get_head( Dedlist *dedlist_ptr, Elem_t *ret);
+
+DedlistStatusCode dedlist_get_tail( Dedlist *dedlist_ptr, Elem_t *ret);
 
 DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
                                         Elem_t value,

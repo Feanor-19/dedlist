@@ -6,7 +6,7 @@
 
 #include "dedlist.h"
 
-inline int is_anchor_valid_for_insert( Dedlist *dedlist_ptr, size_t anchor )
+inline int is_anchor_valid_( Dedlist *dedlist_ptr, size_t anchor )
 {
     if ( anchor < dedlist_ptr->capacity )
     {
@@ -26,8 +26,8 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 {
     DEDLIST_SELFCHECK(dedlist_ptr);
 
-    if ( !is_anchor_valid_for_insert( dedlist_ptr, anchor ) )
-        return DEDLIST_STATUS_ERROR_INVALID_ANCHOR_FOR_INSERT;
+    if ( !is_anchor_valid_( dedlist_ptr, anchor ) )
+        return DEDLIST_STATUS_ERROR_INVALID_ANCHOR;
 
     if (dedlist_ptr->free == 0)
     {
@@ -68,6 +68,29 @@ DedlistStatusCode dedlist_delete(   Dedlist *dedlist_ptr,
     dedlist_ptr->nodes[saved_next].prev = saved_prev;
 
     return DEDLIST_STATUS_OK;
+}
+
+DedlistStatusCode dedlist_get_by_anchor( Dedlist *dedlist_ptr, size_t anchor, Elem_t *ret)
+{
+    DEDLIST_SELFCHECK(dedlist_ptr);
+    assert(ret);
+
+    if (!is_anchor_valid_(dedlist_ptr, anchor))
+        return DEDLIST_STATUS_ERROR_INVALID_ANCHOR;
+
+    *ret = dedlist_ptr->nodes[anchor].data;
+
+    return DEDLIST_STATUS_OK;
+}
+
+DedlistStatusCode dedlist_get_head( Dedlist *dedlist_ptr, Elem_t *ret)
+{
+    return dedlist_get_by_anchor( dedlist_ptr, dedlist_get_head_ind(dedlist_ptr), ret );
+}
+
+DedlistStatusCode dedlist_get_tail( Dedlist *dedlist_ptr, Elem_t *ret)
+{
+    return dedlist_get_by_anchor( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), ret );
 }
 
 DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
@@ -212,6 +235,8 @@ DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 
     return DEDLIST_STATUS_OK;
 }
+
+//---------------------------------------DEDLIST_DO_DUMP----------------------------------------
 
 #ifdef DEDLIST_DO_DUMP
 
@@ -623,3 +648,5 @@ void dedlist_print_verify_res_(FILE *stream, int verify_res)
 }
 
 #endif //DEDLIST_DO_DUMP
+
+//---------------------------------------DEDLIST_DO_DUMP----------------------------------------
