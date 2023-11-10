@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "utils.h"
+
 #include "dedlist.h"
 
 inline int is_anchor_valid_( Dedlist *dedlist_ptr, size_t anchor )
@@ -298,49 +300,78 @@ dl_verify_res_t dedlist_verify( Dedlist *dedlist_ptr )
 }
 #undef DEF_VERIFY_FLAG
 
-inline void get_as_str_curr_local_time_(char *stream)
+//! @details Prints current local time into string stream.
+//! Is string's capacity is exceeded, returns 0. If ok, returns 1.
+inline int get_as_str_curr_local_time_(char *stream, size_t capacity )
 {
     time_t curr_time = time(NULL);
     tm curr_local_time = *localtime(&curr_time);
 
-    sprintf(stream, "%d-%02d-%02d_%02d-%02d-%02d",  curr_local_time.tm_year + 1900,
-                                                    curr_local_time.tm_mon + 1,
-                                                    curr_local_time.tm_mday,
-                                                    curr_local_time.tm_hour,
-                                                    curr_local_time.tm_min,
-                                                    curr_local_time.tm_sec);
+    int cnt = snprintf( stream, capacity, "%d-%02d-%02d_%02d-%02d-%02d",
+                        curr_local_time.tm_year + 1900,
+                        curr_local_time.tm_mon + 1,
+                        curr_local_time.tm_mday,
+                        curr_local_time.tm_hour,
+                        curr_local_time.tm_min,
+                        curr_local_time.tm_sec);
+
+    if (cnt > 0 && cnt < (int) capacity)
+        return 1;
+    else
+        return 0;
 }
 
 inline DedlistStatusCode create_dump_folder_( char **curr_dump_dir_ptr )
 {
     assert(curr_dump_dir_ptr);
 
-    char *dir_name = (char*) calloc(DEDLIST_MAX_PATH_LENGHT, sizeof(char));
-    strncpy(dir_name, DEDLIST_DUMP_PATH, DEDLIST_MAX_PATH_LENGHT);
-    char *dir_name_curr_ptr = dir_name + strlen(DEDLIST_DUMP_PATH);
+    char *dir_name = (char*) calloc(DEDLIST_MAX_DUMP_PATH_LENGHT, sizeof(char));
 
-    char curr_time[DEDLIST_MAX_PATH_LENGHT] = "";
-    get_as_str_curr_local_time_(curr_time);
+    int res = 1;
+    size_t curr_dir_name_ind = str_insert(  dir_name,
+                                            DEDLIST_MAX_DUMP_PATH_LENGHT,
+                                            DEDLIST_DUMP_PATH,
+                                            0,
+                                            &res);
+    if ( !res )
+        return DEDLIST_STATUS_ERROR_MAX_DUMP_PATH_LEN_TOO_SHORT;
 
-    strcat(dir_name_curr_ptr, curr_time);
-    dir_name_curr_ptr += strlen(curr_time);
+    char curr_time[DEDLIST_MAX_DUMP_PATH_LENGHT] = "";
+    if ( !get_as_str_curr_local_time_(curr_time, DEDLIST_MAX_DUMP_PATH_LENGHT) )
+    {
+        assert(0 && "Too short string for curr_local_time! Please chahge it!");
+    }
 
-    strcat(dir_name_curr_ptr, "\\");
-    dir_name_curr_ptr += strlen("\\");
+    curr_dir_name_ind = str_insert( dir_name,
+                                    DEDLIST_MAX_DUMP_PATH_LENGHT,
+                                    curr_time,
+                                    curr_dir_name_ind,
+                                    &res);
+    if ( !res )
+        return DEDLIST_STATUS_ERROR_MAX_DUMP_PATH_LEN_TOO_SHORT;
+
+
+    curr_dir_name_ind = str_insert( dir_name,
+                                    DEDLIST_MAX_DUMP_PATH_LENGHT,
+                                    "\\",
+                                    curr_dir_name_ind,
+                                    &res);
+    if ( !res )
+        return DEDLIST_STATUS_ERROR_MAX_DUMP_PATH_LEN_TOO_SHORT;
 
     struct stat st = {};
 
     if (stat(DEDLIST_DUMP_PATH, &st) == -1) {
-        int res = mkdir(DEDLIST_DUMP_PATH);
+        int res_dir = mkdir(DEDLIST_DUMP_PATH);
 
-        if (res != 0)
+        if (res_dir != 0)
             return DEDLIST_STATUS_ERROR_CANT_CREATE_DUMP_DIR;
     }
 
     if (stat(dir_name, &st) == -1) {
-        int res = mkdir(dir_name);
+        int res_dir = mkdir(dir_name);
 
-        if (res != 0)
+        if (res_dir != 0)
             return DEDLIST_STATUS_ERROR_CANT_CREATE_DUMP_DIR;
     }
 
@@ -601,7 +632,7 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
     char *curr_dump_dir = NULL;
     DL_WRP_PRINT( create_dump_folder_(&curr_dump_dir) );
 
-    char dot_file_path[DEDLIST_MAX_PATH_LENGHT] = "";
+    char dot_file_path[DEDLIST_MAX_DUMP_PATH_LENGHT] = "";
     strcpy(dot_file_path, curr_dump_dir);
     strcat(dot_file_path, "dmp.dot");
 
@@ -611,7 +642,7 @@ void dedlist_dump_( Dedlist *dedlist_ptr,
 
     DL_WRP_PRINT( free_dot_file_(dot_file) );
 
-    char img_file_path[DEDLIST_MAX_PATH_LENGHT] = "";
+    char img_file_path[DEDLIST_MAX_DUMP_PATH_LENGHT] = "";
     strcpy(img_file_path, curr_dump_dir);
     strcat(img_file_path, "dmp.jpg");
 

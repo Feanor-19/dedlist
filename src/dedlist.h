@@ -95,7 +95,7 @@ const char* const dedlist_verification_messages[] =
 //! @brief Dump files will be stored in folder, specified by this path.
 const char* const DEDLIST_DUMP_PATH = ".\\dumps\\";
 
-const size_t DEDLIST_MAX_PATH_LENGHT = 1024;
+const size_t DEDLIST_MAX_DUMP_PATH_LENGHT = 1024;
 
 const size_t DEDLIST_MAX_CMD_GEN_DUMP_IMG_LENGHT = 1024;
 #endif // DEDLIST_DO_DUMP

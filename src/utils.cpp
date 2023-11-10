@@ -11,7 +11,6 @@ size_t str_insert(  char *str_dest_begin,
     assert(str_dest_begin);
     assert(res);
     assert(str_source);
-    assert(start_ind);
 
     size_t cnt = 0;
     int source_copied = 0;
