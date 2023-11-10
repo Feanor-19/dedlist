@@ -98,6 +98,15 @@ DedlistStatusCode dedlist_get_tail( Dedlist *dedlist_ptr, Elem_t *ret)
     return dedlist_get_by_anchor( dedlist_ptr, dedlist_get_tail_ind(dedlist_ptr), ret );
 }
 
+DedlistStatusCode dedlist_get_size( Dedlist *dedlist_ptr, size_t *ret )
+{
+    DEDLIST_SELFCHECK( dedlist_ptr );
+
+    *ret =  dedlist_ptr->size;
+
+    return DEDLIST_STATUS_OK;
+}
+
 DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
                                         Elem_t value,
                                         size_t* inserted_elem_anchor_ptr )
@@ -226,7 +235,57 @@ DedlistStatusCode dedlist_realloc_up_( Dedlist *dedlist_ptr )
 
 DedlistStatusCode dedlist_shrink_to_fit_and_loose_anchors( Dedlist *dedlist_ptr )
 {
+    DEDLIST_SELFCHECK(dedlist_ptr);
 
+    DedlistNode *new_mem = (DedlistNode*) calloc(dedlist_ptr->size + 1, sizeof(DedlistNode));
+    if (!new_mem)
+        return DEDLIST_STATUS_ERROR_MEM_ALLOC;
+
+    dedlist_ptr->capacity = dedlist_ptr->size + 1;
+    dedlist_ptr->free = 0;
+    new_mem[0].prev = 0;
+    new_mem[0].next = 0;
+
+    if ( dedlist_ptr->size != 0 )
+    {
+        size_t curr_anchor = dedlist_get_head_ind( dedlist_ptr );
+        size_t tail_ind = dedlist_get_tail_ind( dedlist_ptr );
+
+        new_mem[0].next = 1;
+        new_mem[0].prev = 1;
+
+        new_mem[1].data = dedlist_ptr->nodes[ curr_anchor ].data;
+        new_mem[1].prev = 0;
+        new_mem[1].next = 2;
+
+        if ( curr_anchor == tail_ind )
+        {
+            new_mem[1].next = 0;
+        }
+
+        size_t curr_ind = 1;
+
+        //new_mem[0].next = curr_ind;
+        //new_mem[0].prev = curr_ind;
+
+        while( curr_anchor != tail_ind )
+        {
+            curr_anchor = dedlist_ptr->nodes[ curr_anchor ].next;
+            curr_ind++;
+
+            new_mem[ curr_ind ].data = dedlist_ptr->nodes[ curr_anchor ].data;
+            new_mem[ curr_ind ].prev = curr_ind - 1;
+            new_mem[ curr_ind ].next = curr_ind + 1;
+        }
+
+        new_mem[curr_ind].next = 0;
+        new_mem[0].prev = curr_ind;
+    }
+
+    free( dedlist_ptr->nodes );
+    dedlist_ptr->nodes = new_mem;
+
+    return DEDLIST_STATUS_OK;
 }
 
 DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )

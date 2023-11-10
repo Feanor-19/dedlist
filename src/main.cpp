@@ -8,7 +8,8 @@ int main()
 
     Dedlist dedlist = {};
 
-    dedlist_ctor(&dedlist, 2);
+    dedlist_ctor(&dedlist, 25);
+
 
     for (int x = 1; x <= 19; x++)
     {
@@ -19,12 +20,16 @@ int main()
 
     for (int x = 1; x <= 19; x++)
     {
-        dedlist_delete_tail( &dedlist );
+        dedlist_delete_head( &dedlist );
     }
 
     DEDLIST_DUMP(&dedlist, 0);
 
-    dedlist_push_head(&dedlist, 42);
+    dedlist_shrink_to_fit_and_loose_anchors( &dedlist );
+
+    DEDLIST_DUMP(&dedlist, 0);
+
+    dedlist_push_head( &dedlist, 19 );
 
     DEDLIST_DUMP(&dedlist, 0);
 
