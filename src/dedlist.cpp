@@ -8,6 +8,7 @@
 
 #include "dedlist.h"
 
+// TODO - помечать все что надо static
 inline int is_anchor_valid_( Dedlist *dedlist_ptr, size_t anchor )
 {
     if ( anchor < dedlist_ptr->capacity )
@@ -44,9 +45,9 @@ DedlistStatusCode dedlist_insert(   Dedlist *dedlist_ptr,
 
 
     ptrdiff_t tmp = dedlist_ptr->nodes[anchor].next;
-    dedlist_ptr->nodes[anchor].next = new_elem_ind;
+    dedlist_ptr->nodes[anchor      ].next = new_elem_ind;
     dedlist_ptr->nodes[new_elem_ind].next = tmp;
-    dedlist_ptr->nodes[tmp].prev = new_elem_ind;
+    dedlist_ptr->nodes[tmp         ].prev = new_elem_ind;
 
     dedlist_ptr->nodes[new_elem_ind].prev = anchor;
 
@@ -242,14 +243,14 @@ DedlistStatusCode dedlist_shrink_to_fit_and_loose_anchors( Dedlist *dedlist_ptr 
         return DEDLIST_STATUS_ERROR_MEM_ALLOC;
 
     dedlist_ptr->capacity = dedlist_ptr->size + 1;
-    dedlist_ptr->free = 0;
+    dedlist_ptr->free     = 0;
     new_mem[0].prev = 0;
     new_mem[0].next = 0;
 
     if ( dedlist_ptr->size != 0 )
     {
         size_t curr_anchor = dedlist_get_head_ind( dedlist_ptr );
-        size_t tail_ind = dedlist_get_tail_ind( dedlist_ptr );
+        size_t tail_ind    = dedlist_get_tail_ind( dedlist_ptr );
 
         new_mem[0].next = 1;
         new_mem[0].prev = 1;
@@ -265,7 +266,7 @@ DedlistStatusCode dedlist_shrink_to_fit_and_loose_anchors( Dedlist *dedlist_ptr 
 
         size_t curr_ind = 1;
 
-        //new_mem[0].next = curr_ind;
+        //new_mem[0].next = curr_ind; TODO:
         //new_mem[0].prev = curr_ind;
 
         while( curr_anchor != tail_ind )
@@ -312,12 +313,12 @@ DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr )
 
 inline int verify_check_occupied_elems( Dedlist *dedlist_ptr )
 {
-    ptrdiff_t curr_ind = dedlist_ptr->nodes[0].next;
-    size_t iterations = 0;
+    ptrdiff_t curr_ind   = dedlist_ptr->nodes[0].next;
+    size_t    iterations = 0;
     while ( curr_ind != 0 )
     {
         if ( dedlist_ptr->nodes[curr_ind].prev != 0
-            && dedlist_ptr->nodes[ dedlist_ptr->nodes[curr_ind].prev ].next != curr_ind )
+          && dedlist_ptr->nodes[ dedlist_ptr->nodes[curr_ind].prev ].next != curr_ind )
         {
             return 0;
         }
@@ -464,6 +465,11 @@ inline DedlistStatusCode create_tmp_dot_file_( const char *dot_file_path, FILE *
 // TODO - в другой файл? что делать с такой большой функцией?
 // если в другой файл, тогда dedlist будет уже из более чем двух файлов,
 // а это неудобно подключать... можно попробовать разобраться с библиотеками
+
+// посмотреть про команду arr; про header: подтягивать вместе с архивом
+// из условной своей стандартной библиотеки, почитать, поискать
+// для intellisense: прописать в настройках путь в "своей библиотеке"
+
 inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                                                     Dedlist *dedlist_ptr,
                                                     dl_verify_res_t verify_res,
@@ -495,6 +501,7 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
     //---------------------------------------------------------------------
 
     //---------------------------------NODE_TEXT--------------------------
+    // Node text
     fprintf(dot_file,   "NODE_TEXT[shape=note, fontname=\"verdana\",\n"
                         "style=bold, style=filled,\n"
                         "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"
@@ -515,10 +522,8 @@ inline DedlistStatusCode write_dot_file_for_dump_(  FILE *dot_file,
                         dedlist_ptr->nodes);
     dedlist_print_verify_res_(dot_file, verify_res);
     fprintf(dot_file, "\"]\n\n\n");
-    //---------------------------------------------------------------------
 
-
-    //------------------------------NODE_0---------------------------------
+    // Node 0
     fprintf(dot_file,   "NODE_0[shape=\"record\", fontname=\"verdana\",\n"
                         "style=bold, style=filled,\n"
                         "color=\"" COLOR_LABEL_COLOR "\", fillcolor=\"" COLOR_LABEL_FILL "\",\n"

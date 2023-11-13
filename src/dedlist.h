@@ -122,10 +122,9 @@ DedlistStatusCode dedlist_ctor_( Dedlist *dedlist_ptr, size_t default_size
                                                                 )
 
 #else // DEDLIST_DO_DUMP
-
 #define dedlist_ctor(dedlist_ptr, default_size) dedlist_ctor_( dedlist_ptr, default_size )
-
 #endif // DEDLIST_DO_DUMP
+
 
 DedlistStatusCode dedlist_dtor( Dedlist *dedlist_ptr );
 
@@ -197,9 +196,9 @@ DedlistStatusCode dedlist_get_tail( Dedlist *dedlist_ptr, Elem_t *ret);
 
 DedlistStatusCode dedlist_get_size( Dedlist *dedlist_ptr, size_t *ret );
 
-DedlistStatusCode dedlist_push_head(    Dedlist *dedlist_ptr,
-                                        Elem_t value,
-                                        size_t* inserted_elem_anchor_ptr = NULL);
+DedlistStatusCode dedlist_push_head( Dedlist *dedlist_ptr,
+                                     Elem_t value,
+                                     size_t* inserted_elem_anchor_ptr = NULL);
 
 DedlistStatusCode dedlist_push_tail(    Dedlist *dedlist_ptr,
                                         Elem_t value,
